@@ -96,24 +96,27 @@
         </div>
       </div>
     </section>
-    
 
   </div>
 </template>
 
 <script>
-
+import Header from '../components/Header.vue'
+import Footer from '../components/Footer.vue'
 
 export default {
   name: 'Cart',
   components: {
-  
+    Header,
+    Footer
   },
   data() {
     return {
       cartEmpty: false,
       cartItems: [
-    
+        { id: 1, name: 'Увлажняющий крем La Roche-Posay', brand: 'La Roche-Posay', price: 2890, quantity: 1, icon: '✨' },
+        { id: 2, name: 'Тушь для ресниц Volume Million', brand: "L'Oréal Paris", price: 1490, quantity: 2, icon: '💄' },
+        { id: 3, name: 'Парфюмерная вода Bloom', brand: 'Gucci', price: 8990, quantity: 1, icon: '🌸' }
       ]
     }
   },
