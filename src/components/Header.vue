@@ -14,6 +14,9 @@
           </div>
         </div>
         <div class="hidden md:flex gap-4">
+          <router-link to="/partner">
+  <button>Стать партнёром</button>
+</router-link>
           <router-link to="/delivery" class="hover:text-pink-400 transition">Доставка</router-link>
           <router-link to="/payment" class="hover:text-pink-400 transition">Оплата</router-link>
           <router-link to="/about" class="hover:text-pink-400 transition">О нас</router-link>

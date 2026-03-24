@@ -20,9 +20,12 @@ import Profile from '../views/Profile.vue'
 import Login from '../views/Login.vue'
 import Checkout from '../views/Checkout.vue'
 import Register from '../views/Register.vue'
+import BecomePartner from '../views/BecomePartner.vue'
 
 
 const routes = [
+  {
+    path: '/partner', name: 'partner', component: BecomePartner},
   { path: '/', name: 'Home', component: Home },
   { path: '/catalog', name: 'Catalog', component: Catalog },
   { path: '/sales', name: 'Sales', component: Sales },
