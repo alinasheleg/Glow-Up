@@ -20,6 +20,8 @@ import Profile from '../views/Profile.vue'
 import Login from '../views/Login.vue'
 import Checkout from '../views/Checkout.vue'
 import Register from '../views/Register.vue'
+import BecomePartner from '../views/BecomePartner.vue'
+
 
 
 const routes = [
@@ -42,6 +44,8 @@ const routes = [
   { path: '/login', name: 'Login', component: Login },
     { path: '/checkout', name: 'Checkout', component: Checkout },
     { path: '/register', name: 'Register', component: Register },
+ {path: '/partner', name: 'partner',component: BecomePartner},
+
 
 
 ]

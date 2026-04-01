@@ -17,6 +17,7 @@
           <router-link to="/delivery" class="hover:text-pink-400 transition">Доставка</router-link>
           <router-link to="/payment" class="hover:text-pink-400 transition">Оплата</router-link>
           <router-link to="/about" class="hover:text-pink-400 transition">О нас</router-link>
+          <router-link to="/partner" class="partner-btn"> Стать партнёром</router-link>
         </div>
       </div>
     </div>
