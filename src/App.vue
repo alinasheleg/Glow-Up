@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Header />
-
+<div :class="{ dark: isDark }"></div>
     <main class="min-h-screen bg-gray-50">
       <router-view />
     </main>

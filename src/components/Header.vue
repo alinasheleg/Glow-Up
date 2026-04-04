@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Верхняя полоска -->
-    <div class="bg-gray-900 text-white py-2">
+    <div class="bg-gray-900 text-white py-2 dark:bg-gray-800 dark:text-gray-200">
       <div class="max-w-7xl mx-auto px-4 flex justify-between items-center text-sm">
         <div class="flex items-center gap-6">
           <div class="flex items-center gap-2">
@@ -17,13 +17,13 @@
           <router-link to="/delivery" class="hover:text-pink-400 transition">Доставка</router-link>
           <router-link to="/payment" class="hover:text-pink-400 transition">Оплата</router-link>
           <router-link to="/about" class="hover:text-pink-400 transition">О нас</router-link>
-          <router-link to="/partner" class="partner-btn"> Стать партнёром</router-link>
+          <router-link to="/partner" class="partner-btn">Стать партнёром</router-link>
         </div>
       </div>
     </div>
 
     <!-- Основной Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
+    <header class="bg-white shadow-sm sticky top-0 z-50 dark:bg-gray-900 dark:text-gray-200">
       <div class="max-w-7xl mx-auto px-4 py-4">
         <div class="flex items-center justify-between gap-4">
           <!-- Логотип -->
@@ -43,22 +43,22 @@
           </div>
 
           <!-- Поиск -->
-          <div class="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 flex-1 max-w-2xl">
-            <span class="text-gray-400">🔍</span>
+          <div class="hidden md:flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-4 py-2 flex-1 max-w-2xl">
+            <span class="text-gray-400 dark:text-gray-300">🔍</span>
             <input 
               type="text" 
               placeholder="Поиск косметики, парфюмерии и ухода"
-              class="bg-transparent border-none outline-none ml-2 w-full text-sm"
+              class="bg-transparent border-none outline-none ml-2 w-full text-sm dark:text-white"
             />
           </div>
 
           <!-- Иконки -->
           <div class="flex items-center gap-2">
-            <router-link to="/profile" class="p-2 hover:bg-gray-100 rounded-full transition text-2xl">
+            <router-link to="/profile" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition text-2xl">
               👤
             </router-link>
             
-            <router-link to="/favorites" class="p-2 hover:bg-gray-100 rounded-full transition relative text-2xl">
+            <router-link to="/favorites" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition relative text-2xl">
               ❤️
               <span 
                 v-if="favoritesCount > 0"
@@ -68,7 +68,7 @@
               </span>
             </router-link>
             
-            <router-link to="/cart" class="p-2 hover:bg-gray-100 rounded-full transition relative text-2xl">
+            <router-link to="/cart" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition relative text-2xl">
               🛒
               <span 
                 v-if="cartCount > 0"
@@ -81,17 +81,17 @@
         </div>
 
         <!-- Навигация -->
-        <nav class="hidden lg:flex gap-8 mt-4 pt-4 border-t">
-          <router-link to="/catalog" class="text-gray-700 hover:text-pink-600 transition font-medium">Каталог</router-link>
+        <nav class="hidden lg:flex gap-8 mt-4 pt-4 border-t dark:border-gray-700">
+          <router-link to="/catalog" class="text-gray-700 dark:text-gray-200 hover:text-pink-600 transition font-medium">Каталог</router-link>
           <router-link to="/sales" class="text-pink-600 font-medium">🔥 Акции</router-link>
-          <router-link to="/new" class="text-gray-700 hover:text-pink-600 transition font-medium">Новинки</router-link>
+          <router-link to="/new" class="text-gray-700 dark:text-gray-200 hover:text-pink-600 transition font-medium">Новинки</router-link>
         </nav>
 
         <!-- Мобильное меню -->
-        <nav v-if="isMenuOpen" class="lg:hidden mt-4 pt-4 border-t flex flex-col gap-3">
-          <router-link to="/catalog" class="text-gray-700 hover:text-pink-600 transition" @click="isMenuOpen = false">Каталог</router-link>
+        <nav v-if="isMenuOpen" class="lg:hidden mt-4 pt-4 border-t dark:border-gray-700 flex flex-col gap-3">
+          <router-link to="/catalog" class="text-gray-700 dark:text-gray-200 hover:text-pink-600 transition" @click="isMenuOpen = false">Каталог</router-link>
           <router-link to="/sales" class="text-pink-600" @click="isMenuOpen = false">🔥 Акции</router-link>
-          <router-link to="/new" class="text-gray-700 hover:text-pink-600 transition" @click="isMenuOpen = false">Новинки</router-link>
+          <router-link to="/new" class="text-gray-700 dark:text-gray-200 hover:text-pink-600 transition" @click="isMenuOpen = false">Новинки</router-link>
         </nav>
       </div>
     </header>
