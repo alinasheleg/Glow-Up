@@ -42,15 +42,6 @@
             </button>
           </div>
 
-          <!-- Поиск -->
-          <div class="hidden md:flex items-center bg-gray-100 dark:bg-gray-700 rounded-full px-4 py-2 flex-1 max-w-2xl">
-            <span class="text-gray-400 dark:text-gray-300">🔍</span>
-            <input 
-              type="text" 
-              placeholder="Поиск косметики, парфюмерии и ухода"
-              class="bg-transparent border-none outline-none ml-2 w-full text-sm dark:text-white"
-            />
-          </div>
 
           <!-- Иконки -->
           <div class="flex items-center gap-2">
@@ -82,7 +73,6 @@
 
         <!-- Навигация -->
         <nav class="hidden lg:flex gap-8 mt-4 pt-4 border-t dark:border-gray-700">
-          <router-link to="/catalog" class="text-gray-700 dark:text-gray-200 hover:text-pink-600 transition font-medium">Каталог</router-link>
           <router-link to="/sales" class="text-pink-600 font-medium">🔥 Акции</router-link>
           <router-link to="/new" class="text-gray-700 dark:text-gray-200 hover:text-pink-600 transition font-medium">Новинки</router-link>
         </nav>
