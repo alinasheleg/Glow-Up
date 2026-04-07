@@ -22,7 +22,9 @@ import Checkout from '../views/Checkout.vue'
 import Register from '../views/Register.vue'
 import BecomePartner from '../views/BecomePartner.vue'
 import Partner from '../views/Partner.vue'
-
+import PartnerLogin from '@/views/PartnerLogin.vue'
+import PartnerRegister from '@/views/PartnerRegister.vue'
+import ProductDetails from '@/views/ProductDetails.vue'
 
 
 
@@ -48,7 +50,10 @@ const routes = [
     { path: '/checkout', name: 'Checkout', component: Checkout },
     { path: '/register', name: 'Register', component: Register },
  {path: '/becomePartner', name: 'partner',component: BecomePartner},
-{path: '/partner',name: 'Partner',component: Partner}
+{path: '/partner',name: 'Partner',component: Partner},
+{path: '/partner-login', name: 'PartnerLogin',component: PartnerLogin},
+{path: '/partner-register',name: 'PartnerRegister',component: PartnerRegister},
+{path: '/product/:id',component: ProductDetails},
 
 
 ]

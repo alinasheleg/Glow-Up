@@ -337,13 +337,9 @@
 </template>
 
 <script>
-
-
 export default {
   name: 'Checkout',
-  components: {
-  
-  },
+
   data() {
     return {
       orderForm: {
@@ -361,18 +357,19 @@ export default {
         comment: '',
         payment: 'card'
       },
+
       promoCode: '',
       promoApplied: false,
-      cartItems: [
-        { id: 1, name: 'Увлажняющий крем', brand: 'La Roche-Posay', price: 2890, quantity: 1, icon: '✨' },
-        { id: 2, name: 'Тушь для ресниц', brand: "L'Oréal Paris", price: 1490, quantity: 2, icon: '💄' }
-      ],
+
+      cartItems: [],
+
       deliveryMethods: [
         { id: 'courier', name: 'Курьерская доставка', price: 1500, description: 'Доставка по городу', time: '1-2 дня' },
         { id: 'pickup', name: 'Пункты выдачи', price: 800, description: 'Самовывоз из пункта CDEK', time: '2-5 дней' },
         { id: 'post', name: 'Постамат', price: 1000, description: 'Круглосуточная выдача', time: '2-5 дней' },
         { id: 'store', name: 'Самовывоз из магазина', price: 0, description: 'Бесплатно', time: 'в день заказа' }
       ],
+
       paymentMethods: [
         { id: 'card', name: 'Банковская карта', icon: '💳', description: 'Visa, Mastercard, МИР' },
         { id: 'kaspi', name: 'Kaspi QR', icon: '🏦', description: 'Оплата через Kaspi' },
@@ -381,24 +378,48 @@ export default {
       ]
     }
   },
+
+  mounted() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || []
+
+    this.cartItems = cart.map(item => ({
+      ...item,
+      quantity: item.quantity || 1
+    }))
+  },
+
   computed: {
     subtotal() {
-      return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+      return this.cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      )
     },
+
     deliveryCost() {
-      const method = this.deliveryMethods.find(d => d.id === this.orderForm.delivery)
+      const method = this.deliveryMethods.find(
+        d => d.id === this.orderForm.delivery
+      )
+
       return method ? (this.subtotal >= 15000 ? 0 : method.price) : 0
     },
+
     discount() {
       return this.promoApplied ? Math.round(this.subtotal * 0.1) : 0
     },
+
     total() {
       return this.subtotal + this.deliveryCost - this.discount
     },
+
     totalItems() {
-      return this.cartItems.reduce((sum, item) => sum + item.quantity, 0)
+      return this.cartItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      )
     }
   },
+
   methods: {
     applyPromoCode() {
       if (this.promoCode.toLowerCase() === 'glowup10') {
@@ -407,14 +428,20 @@ export default {
         alert('Неверный промокод')
       }
     },
+
     submitOrder() {
-      // Валидация
       if (!this.orderForm.firstName || !this.orderForm.phone || !this.orderForm.email) {
         alert('Заполните обязательные поля')
         return
       }
-      
-      alert(`Заказ оформлен!\nСумма: ${this.total} ₸\nСпособ доставки: ${this.orderForm.delivery}\nСпособ оплаты: ${this.orderForm.payment}`)
+
+      alert(`Заказ оформлен!
+Сумма: ${this.total} ₸
+Способ доставки: ${this.orderForm.delivery}
+Способ оплаты: ${this.orderForm.payment}`)
+
+      localStorage.removeItem('cart')
+
       this.$router.push('/profile')
     }
   }
