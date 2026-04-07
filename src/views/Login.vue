@@ -55,7 +55,19 @@
             Войти
           </button>
         </form>
+<div class="mt-6 space-y-3">
+  <router-link to="/partner-login">
+    <button class="w-full border border-pink-500 text-pink-600 py-3 rounded-lg font-medium hover:bg-pink-50 transition">
+      Войти как партнер
+    </button>
+  </router-link>
 
+  <router-link to="/partner-register">
+    <button class="w-full border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition">
+      Зарегистрироваться как партнер
+    </button>
+  </router-link>
+</div>
         <!-- Divider -->
         <div class="relative my-6">
           <div class="absolute inset-0 flex items-center">

@@ -72,7 +72,12 @@
         </div>
 
         <!-- Навигация -->
+         <router-link to="/catalog">
+  
+</router-link> 
+
         <nav class="hidden lg:flex gap-8 mt-4 pt-4 border-t dark:border-gray-700">
+          <router-link to="/catalog"  class="text-gray-700 dark:text-gray-200 hover:text-pink-600 transition font-medium">Каталог</router-link>
           <router-link to="/sales" class="text-pink-600 font-medium">🔥 Акции</router-link>
           <router-link to="/new" class="text-gray-700 dark:text-gray-200 hover:text-pink-600 transition font-medium">Новинки</router-link>
         </nav>

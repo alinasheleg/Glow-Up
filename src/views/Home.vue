@@ -83,37 +83,8 @@
             </button>
           </div>
 
-          <!-- Товары -->
-          <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-            <div
-              v-for="product in filteredProducts"
-              :key="product.id"
-              class="bg-white rounded-2xl shadow-md hover:shadow-lg transition p-4 flex flex-col"
-            >
-              <img
-                :src="product.image"
-                :alt="product.name"
-                class="w-full h-52 object-cover rounded-xl mb-4"
-              />
+          <h3 class="text-2xl font-bold mb-6">Рекомендованные  товары</h3>
 
-              <h3 class="font-semibold text-lg">{{ product.name }}</h3>
-
-              <p class="text-gray-500 text-sm mb-3">
-                {{ product.description }}
-              </p>
-
-              <div class="mt-auto flex justify-between items-center">
-                <span class="text-pink-600 font-bold">{{ product.price }} ₸</span>
-
-                <button
-                  @click="addToCart(product)"
-                  class="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-2 rounded-xl"
-                >
-                  В корзину
-                </button>
-              </div>
-            </div>
-          </div>
 
         </div>
 

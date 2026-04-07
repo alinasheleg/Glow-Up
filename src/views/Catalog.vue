@@ -1,125 +1,111 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
-  
+  <div class="min-h-screen bg-pink-50 px-6 py-10">
+    <div class="max-w-7xl mx-auto">
 
-    <main class="flex-grow">
-      <section class="max-w-7xl mx-auto px-4 py-12">
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-10 text-center">
-          Каталог товаров
-        </h1>
+      <h1 class="text-4xl font-bold mb-8">Каталог товаров</h1>
 
-        <!-- Сетка карточек -->
-        <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          <div
-            v-for="product in products"
-            :key="product.id"
-            class="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden flex flex-col"
-          >
-            <div class="relative">
-              <img
-                :src="product.image"
-                :alt="product.name"
-                class="w-full h-60 object-cover"
-              />
-              <button
-                class="absolute top-3 right-3 bg-white/80 hover:bg-white text-pink-600 p-2 rounded-full shadow"
-              >
-                <i class="fas fa-heart"></i>
-              </button>
+      <!-- Категории -->
+      <div class="flex gap-3 flex-wrap mb-8">
+        <button
+          v-for="category in categories"
+          :key="category"
+          @click="selectedCategory = category"
+          class="px-5 py-2 rounded-full border"
+          :class="selectedCategory === category ? 'bg-pink-600 text-white' : 'bg-white'"
+        >
+          {{ category }}
+        </button>
+      </div>
+
+      <!-- Товары -->
+      <div class="grid md:grid-cols-4 gap-6">
+        <div
+          v-for="product in filteredProducts"
+          :key="product.id"
+          class="bg-white rounded-2xl shadow p-4 hover:shadow-lg cursor-pointer"
+        >
+          <router-link :to="`/product/${product.id}`">
+            <div class="h-56 bg-gray-100 rounded-xl flex items-center justify-center text-5xl">
+              {{ product.image }}
             </div>
-            <div class="p-5 flex flex-col flex-grow">
-              <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ product.name }}</h3>
-              <p class="text-gray-600 mb-4 flex-grow">{{ product.description }}</p>
-              <div class="flex items-center justify-between">
-                <span class="text-xl font-bold text-pink-600">{{ product.price }} ₸</span>
-                <button
-                  @click="addToCart(product)"
-                  class="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-4 py-2 rounded-xl hover:opacity-90 transition"
-                >
-                  В корзину
-                </button>
-              </div>
-            </div>
+
+            <h2 class="font-bold text-lg mt-4">{{ product.name }}</h2>
+            <p class="text-gray-500">{{ product.brand }}</p>
+          </router-link>
+
+          <div class="flex justify-between items-center mt-4">
+            <span class="text-pink-600 font-bold text-xl">{{ product.price }} ₸</span>
+
+            <button
+              @click="addToCart(product)"
+              class="bg-pink-600 text-white px-4 py-2 rounded-lg"
+            >
+              В корзину
+            </button>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
 
-  
+    </div>
   </div>
 </template>
 
 <script>
-
-
 export default {
-
   data() {
     return {
-      cartCount: 0,
+      selectedCategory: 'Все',
+      categories: [
+        'Все',
+        'Уход',
+        'Косметика',
+        'Парфюм',
+        'Волосы',
+        'Для тела'
+      ],
       products: [
         {
           id: 1,
-          name: 'Матовая помада Velvet Kiss',
-          description: 'Нежная текстура, стойкость до 8 часов.',
-          price: 2490,
-          image: 'https://source.unsplash.com/400x400/?lipstick,makeup',
+          name: 'Крем для лица',
+          brand: 'La Roche-Posay',
+          category: 'Уход',
+          price: 4500,
+          image: '🧴'
         },
         {
           id: 2,
-          name: 'Увлажняющий крем Glow Skin',
-          description: 'С натуральными маслами и витамином Е.',
-          price: 3290,
-          image: 'https://source.unsplash.com/400x400/?cream,cosmetics',
+          name: 'Помада',
+          brand: 'Maybelline',
+          category: 'Косметика',
+          price: 3500,
+          image: '💄'
         },
         {
           id: 3,
-          name: 'Тушь для ресниц Volume Lash',
-          description: 'Придает объем и длину, не осыпается.',
-          price: 2790,
-          image: 'https://source.unsplash.com/400x400/?mascara,makeup',
-        },
-        {
-          id: 4,
-          name: 'Тональный крем Natural Fit',
-          description: 'Легкая формула, подходит для всех типов кожи.',
-          price: 3590,
-          image: 'https://source.unsplash.com/400x400/?foundation,makeup',
-        },
-        {
-          id: 5,
-          name: 'Палетка теней Rose Mood',
-          description: '6 оттенков для дневного и вечернего макияжа.',
-          price: 4590,
-          image: 'https://source.unsplash.com/400x400/?eyeshadow,makeup',
-        },
-        {
-          id: 6,
-          name: 'Блеск для губ Shine Glow',
-          description: 'Создает эффект влажных губ и ухаживает за ними.',
-          price: 1990,
-          image: 'https://source.unsplash.com/400x400/?lipgloss,cosmetics',
-        },
-      ],
+          name: 'Парфюм Bloom',
+          brand: 'Gucci',
+          category: 'Парфюм',
+          price: 12000,
+          image: '🌸'
+        }
+      ]
     }
   },
-  mounted() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || []
-    this.cartCount = cart.length
+  computed: {
+    filteredProducts() {
+      if (this.selectedCategory === 'Все') return this.products
+      return this.products.filter(
+        p => p.category === this.selectedCategory
+      )
+    }
   },
   methods: {
     addToCart(product) {
       let cart = JSON.parse(localStorage.getItem('cart')) || []
-      const existing = cart.find(item => item.id === product.id)
-      if (!existing) {
-        cart.push(product)
-        localStorage.setItem('cart', JSON.stringify(cart))
-        this.cartCount = cart.length
-        alert(`${product.name} добавлен в корзину!`)
-      } else {
-        alert('Этот товар уже в корзине!')
-      }
-    },
-  },
+      cart.push(product)
+      localStorage.setItem('cart', JSON.stringify(cart))
+      alert('Добавлено в корзину')
+    }
+  }
 }
 </script>
