@@ -10,7 +10,9 @@
           </div>
           <div class="flex items-center gap-2">
             <span>📞</span>
-            <span>8 777 555-35-35</span>
+            <a href="tel:+77775553535" class="hover:text-pink-400 transition cursor-pointer">
+  8 777 555-35-35
+</a>
           </div>
         </div>
         <div class="hidden md:flex gap-4">

@@ -27,18 +27,24 @@
           </ul>
         </div>
 
-        <!-- 3️⃣ Компания -->
+         <!-- 3️⃣ Компаниям -->
         <div>
-          <h4 class="font-semibold mb-4">Компания</h4>
+          <h4 class="font-semibold mb-4">Компаниям</h4>
+
           <ul class="space-y-2 text-sm text-gray-400">
+
             <li>
-              <router-link to="/about" class="hover:text-white transition">
+              <router-link to="/about" class="hover:text-white transition block">
                 О нас
               </router-link>
             </li>
+
             <li>
-            
+              <router-link to="/becomePartner" class="hover:text-pink-400 transition block">
+                Стать партнёром
+              </router-link>
             </li>
+
           </ul>
         </div>
 
