@@ -179,7 +179,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import api from '@/api/axios'
 
 export default {
   name: 'Login',
@@ -196,28 +196,26 @@ export default {
   methods: {
 
     async handleLogin() {
-
+      this.loading = true
+      this.error = ''
 
   try {
 
-    const response = await axios.post(
-      'http://127.0.0.1:8000/api/login',
-      {
-        email: this.email,
-        password: this.password
-      } 
-    )
+  const response = await api.post('/login', {
+    email: this.email,
+    password: this.password
+  })
       
-localStorage.setItem(
-  'token',
-  response.data.token
-)
+const token = response.data.token
+const user = response.data.user
 
-localStorage.setItem(
-  'user',
-  JSON.stringify(response.data.user)
-)
-this.$router.push('/')
+localStorage.setItem('token', token)
+localStorage.setItem('user', JSON.stringify(user))
+
+// ВАЖНО: синхронизация axios
+api.defaults.headers.common.Authorization = `Bearer ${token}`
+
+this.$router.push('/profile')
 
     console.log(response)
 

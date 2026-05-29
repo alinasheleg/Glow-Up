@@ -206,19 +206,22 @@
           <div v-if="activeTab === 'addresses'" class="p-6">
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-2xl font-bold">Адреса доставки</h2>
+
               <button 
-                @click="showAddressForm = true"
+                @click="openCreateAddress"
                 class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition font-medium"
               >
                 + Добавить адрес
               </button>
             </div>
 
+            <!-- empty -->
             <div v-if="addresses.length === 0" class="text-center py-12">
               <span class="text-6xl mb-4 block">📍</span>
               <p class="text-gray-600 mb-4">У вас пока нет сохраненных адресов</p>
             </div>
 
+            <!-- list -->
             <div v-else class="grid md:grid-cols-2 gap-4">
               <div 
                 v-for="address in addresses" 
@@ -226,27 +229,113 @@
                 class="border rounded-xl p-6 hover:shadow-md transition"
               >
                 <div class="flex items-start justify-between mb-3">
+                  
                   <div>
                     <h3 class="font-bold mb-1">{{ address.title }}</h3>
+
                     <span 
-                      v-if="address.isDefault"
+                      v-if="address.is_default"
                       class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded-full font-medium"
                     >
                       Основной
                     </span>
                   </div>
-                  <button class="text-gray-400 hover:text-red-500">
-                    🗑️
+
+                  <button 
+                    class="text-gray-400 hover:text-red-500"
+                    @click="deleteAddress(address.id)"
+                  >
+                    <span class="text-xl">🗑️</span>
                   </button>
                 </div>
-                <p class="text-sm text-gray-700 mb-1">{{ address.city }}</p>
-                <p class="text-sm text-gray-700">{{ address.street }}, {{ address.house }}</p>
-                <p class="text-sm text-gray-500">{{ address.apartment ? `кв. ${address.apartment}` : '' }}</p>
-                <button class="text-sm text-pink-600 hover:text-pink-700 mt-3">
+
+                <p class="text-sm text-gray-700">
+                  {{ address.city }}, {{ address.street }}, {{ address.house }}
+                  <span v-if="address.apartment">, кв. {{ address.apartment }}</span>
+                </p>
+
+                <p v-if="address.comment" class="text-xs text-gray-500 mt-1">
+                  {{ address.comment }}
+                </p>
+
+                <button 
+                  class="text-sm text-pink-600 hover:text-pink-700 mt-3"
+                  @click="openEditAddress(address)"
+                >
                   Редактировать
                 </button>
               </div>
             </div>
+
+            <!-- MODAL -->
+            <div 
+              v-if="showAddressForm" 
+              class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            >
+              <div class="bg-white p-6 rounded-xl w-full max-w-lg">
+
+                <h2 class="text-xl font-bold mb-4">
+                  {{ mode === 'create' ? 'Новый адрес' : 'Редактировать адрес' }}
+                </h2>
+
+                <div class="space-y-3">
+
+                  <input v-model="formAddress.title" placeholder="Название" class="w-full border p-2 rounded">
+
+                  <input v-model="formAddress.city" placeholder="Город" class="w-full border p-2 rounded">
+
+                  <input v-model="formAddress.street" placeholder="Улица" class="w-full border p-2 rounded">
+
+                  <input v-model="formAddress.house" placeholder="Дом" class="w-full border p-2 rounded">
+
+                  <input v-model="formAddress.apartment" placeholder="Квартира" class="w-full border p-2 rounded">
+
+                  <textarea v-model="formAddress.comment" placeholder="Комментарий" class="w-full border p-2 rounded"></textarea>
+
+                </div>
+
+                <!-- МОДАЛКА ДОБАВЛЕНИЯ / РЕДАКТИРОВАНИЯ АДРЕСА -->
+                <div v-if="showAddressForm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                  <div class="bg-white p-6 rounded-xl w-full max-w-lg">
+
+                  <h2 class="text-xl font-bold mb-4">
+                    {{ mode === 'edit' ? 'Редактирование адреса' : 'Новый адрес' }}
+                  </h2>
+
+                  <div class="space-y-3">
+
+                    <input v-model="formAddress.title" placeholder="Название (Дом, Офис)" class="w-full border p-2 rounded">
+
+                    <input v-model="formAddress.city" placeholder="Город" class="w-full border p-2 rounded">
+
+                    <input v-model="formAddress.street" placeholder="Улица" class="w-full border p-2 rounded">
+
+                    <input v-model="formAddress.house" placeholder="Дом" class="w-full border p-2 rounded">
+
+                    <input v-model="formAddress.apartment" placeholder="Квартира" class="w-full border p-2 rounded">
+
+                    <textarea v-model="formAddress.comment" placeholder="Комментарий" class="w-full border p-2 rounded"></textarea>
+
+                  </div>
+
+                    <div class="flex justify-end gap-2 mt-4">
+
+                      <button @click="closeAddressForm" class="px-4 py-2 bg-gray-200 rounded">
+                        Отмена
+                      </button>
+
+                      <button @click="saveAddress" class="px-4 py-2 bg-pink-600 text-white rounded">
+                        Сохранить
+                      </button>
+
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
 
           <!-- Бонусы -->
@@ -361,9 +450,11 @@ export default {
   },
   data() {
     return {
-      isLoggedIn: false, 
+      isLoggedIn: false,
       activeTab: 'orders',
       showAddressForm: false,
+      mode: 'create',
+
       tabs: [
         { id: 'orders', name: 'Заказы', icon: '📦' },
         { id: 'profile', name: 'Профиль', icon: '👤' },
@@ -371,6 +462,7 @@ export default {
         { id: 'bonuses', name: 'Бонусы', icon: '🎁' },
         { id: 'settings', name: 'Настройки', icon: '⚙️' }
       ],
+
       user: {
         name: '',
         lastName: '',
@@ -380,56 +472,23 @@ export default {
         gender: '',
         bonuses: 0
       },
-      orders: [
-        {
-          id: '2024-001',
-          date: '10 ноября 2024',
-          status: 'delivered',
-          statusText: 'Доставлен',
-          total: 5870,
-          itemsCount: 3,
-          items: [
-            { id: 1, name: 'Увлажняющий крем', brand: 'La Roche-Posay', price: 2890, quantity: 1, icon: '✨' },
-            { id: 2, name: 'Тушь для ресниц', brand: "L'Oréal", price: 1490, quantity: 2, icon: '💄' }
-          ]
-        },
-        {
-          id: '2024-002',
-          date: '5 ноября 2024',
-          status: 'processing',
-          statusText: 'В обработке',
-          total: 8990,
-          itemsCount: 1,
-          items: [
-            { id: 3, name: 'Парфюмерная вода Bloom', brand: 'Gucci', price: 8990, quantity: 1, icon: '🌸' }
-          ]
-        }
-      ],
-      addresses: [
-        {
-          id: 1,
-          title: 'Дом',
-          city: 'Астана',
-          street: 'ул. Кабанбай батыра',
-          house: '52',
-          apartment: '15',
-          isDefault: true
-        },
-        {
-          id: 2,
-          title: 'Работа',
-          city: 'Астана',
-          street: 'пр. Кунаева',
-          house: '12/1',
-          apartment: '',
-          isDefault: false
-        }
-      ],
-      bonusHistory: [
-        { id: 1, description: 'Начисление за заказ №2024-001', amount: 293, type: 'earned', date: '10 ноября 2024' },
-        { id: 2, description: 'Списание на заказ №2024-002', amount: 500, type: 'spent', date: '5 ноября 2024' },
-        { id: 3, description: 'Бонус за регистрацию', amount: 500, type: 'earned', date: '1 ноября 2024' }
-      ]
+
+      // 👇 ЕДИНАЯ ФОРМА (ВАЖНО)
+      formAddress: {
+        id: null,
+        title: '',
+        city: '',
+        street: '',
+        house: '',
+        apartment: '',
+        comment: ''
+      },
+
+      editingId: null,
+
+      orders: [],
+      addresses: [],
+      bonusHistory: []
     }
   },
 
@@ -438,37 +497,102 @@ export default {
   const token = localStorage.getItem('token')
 
   if (!token) {
-
     this.$router.push('/login')
     return
-
   }
 
   try {
 
-    const response = await api.get('/me')
+    const userResponse = await api.get('/me')
 
     this.user = {
       ...this.user,
-      ...response.data
+      ...userResponse.data
     }
 
     this.isLoggedIn = true
 
   } catch (error) {
 
-    console.log(error)
+    if (error.response?.status === 401) {
 
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
 
-    this.$router.push('/login')
+      this.$router.push('/login')
+
+    }
 
   }
 
+  // отдельные запросы
+  try {
+    const ordersResponse = await api.get('/orders')
+    this.orders = ordersResponse.data
+  } catch (e) {
+    console.log(e)
+  }
+
+  try {
+    const addressesResponse = await api.get('/addresses')
+
+    const raw = addressesResponse.data
+
+    const list = Array.isArray(raw)
+      ? raw
+      : raw?.data ?? []
+
+    this.addresses = list.map(a => ({
+      id: a.id,
+      title: a.title,
+      city: a.city,
+      street: a.street,
+      house: a.house,
+      apartment: a.apartment,
+      is_default: a.is_default,
+      comment: a.comment
+    }))
+  } catch (e) {
+    console.log(e)
+  }
+
+  try {
+    const bonusesResponse = await api.get('/bonuses')
+
+    this.user.bonuses = bonusesResponse.data.bonuses || 0
+    this.bonusHistory = bonusesResponse.data.history || []
+
+  } catch (e) {
+    console.log(e)
+  }
 },
 
   methods: {
+    
+    async addAddress() {
+      const res = await api.post('/addresses', this.newAddress)
+      this.addresses.push(res.data)
+
+      this.showAddressForm = false
+
+      this.newAddress = {
+        title: '',
+        city: '',
+        street: '',
+        house: '',
+        apartment: '',
+        comment: ''
+      }
+    },
+
+    async addAddress() {
+      const res = await api.post('/addresses', this.form)
+
+      this.addresses.push(res.data)
+
+      this.closeAddressForm()
+    },
+
     getOrderStatusClass(status) {
       const classes = {
         'delivered': 'bg-green-100 text-green-700',
@@ -478,9 +602,37 @@ export default {
       }
       return classes[status] || 'bg-gray-100 text-gray-700'
     },
-    saveProfile() {
-      alert('Профиль сохранен!')
-    },
+    async saveProfile() {
+
+  try {
+
+    const response = await api.post('/user/update', {
+
+      name: this.user.name,
+      lastName: this.user.lastName,
+      email: this.user.email,
+      phone: this.user.phone,
+      birthday: this.user.birthday,
+      gender: this.user.gender
+
+    })
+
+    this.user = {
+      ...this.user,
+      ...response.data.user
+    }
+
+    alert('Профиль успешно сохранен!')
+
+  } catch (error) {
+
+    console.log(error)
+
+    alert('Ошибка сохранения профиля')
+
+  }
+
+},
     async logout() {
 
       if (!confirm('Вы действительно хотите выйти?')) {
@@ -504,7 +656,97 @@ export default {
 
       this.$router.push('/login')
 
+    },
+
+      openCreateAddress() {
+    this.mode = 'create'
+    this.showAddressForm = true
+    this.editingId = null
+
+    this.formAddress = {
+      id: null,
+      title: '',
+      city: '',
+      street: '',
+      house: '',
+      apartment: '',
+      comment: ''
+    }
+  },
+
+  openEditAddress(address) {
+    this.mode = 'edit'
+    this.showAddressForm = true
+    this.editingId = address.id
+
+    this.formAddress = {
+      id: address.id,
+      title: address.title,
+      city: address.city,
+      street: address.street,
+      house: address.house,
+      apartment: address.apartment,
+      comment: address.comment
+    }
+  },
+
+  async saveAddress() {
+    try {
+
+      // CREATE
+      if (this.mode === 'create') {
+        const res = await api.post('/addresses', this.formAddress)
+        this.addresses.push(res.data)
+      }
+
+      // EDIT
+      if (this.mode === 'edit') {
+        const res = await api.put(
+          `/addresses/${this.editingId}`,
+          this.formAddress
+        )
+
+        const index = this.addresses.findIndex(a => a.id === this.editingId)
+        if (index !== -1) {
+          this.addresses[index] = res.data
+        }
+      }
+
+      this.closeAddressForm()
+
+    } catch (e) {
+      console.log(e)
+      alert('Ошибка сохранения адреса')
+    }
+  },
+
+  closeAddressForm() {
+    this.showAddressForm = false
+    this.mode = 'create'
+    this.editingId = null
+
+    this.formAddress = {
+      id: null,
+      title: '',
+      city: '',
+      street: '',
+      house: '',
+      apartment: '',
+      comment: ''
+    }
+  },
+
+  async deleteAddress(id) {
+    if (!confirm('Удалить адрес?')) return
+
+    try {
+      await api.delete(`/addresses/${id}`)
+      this.addresses = this.addresses.filter(a => a.id !== id)
+    } catch (e) {
+      console.log(e)
+      alert('Ошибка удаления адреса')
     }
   }
+}
 }
 </script>
