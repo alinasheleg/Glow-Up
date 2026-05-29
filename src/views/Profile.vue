@@ -352,6 +352,7 @@
 
 <script>
 
+import api from '@/api/axios'
 
 export default {
   name: 'Profile',
@@ -360,7 +361,7 @@ export default {
   },
   data() {
     return {
-      isLoggedIn: true, 
+      isLoggedIn: false, 
       activeTab: 'orders',
       showAddressForm: false,
       tabs: [
@@ -371,13 +372,13 @@ export default {
         { id: 'settings', name: 'Настройки', icon: '⚙️' }
       ],
       user: {
-        name: 'Анна',
-        lastName: 'Иванова',
-        email: 'anna@example.com',
-        phone: '+7 (777) 123-45-67',
-        birthday: '1995-05-15',
-        gender: 'female',
-        bonuses: 1250
+        name: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        birthday: '',
+        gender: '',
+        bonuses: 0
       },
       orders: [
         {
@@ -431,6 +432,42 @@ export default {
       ]
     }
   },
+
+  async mounted() {
+
+  const token = localStorage.getItem('token')
+
+  if (!token) {
+
+    this.$router.push('/login')
+    return
+
+  }
+
+  try {
+
+    const response = await api.get('/me')
+
+    this.user = {
+      ...this.user,
+      ...response.data
+    }
+
+    this.isLoggedIn = true
+
+  } catch (error) {
+
+    console.log(error)
+
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+
+    this.$router.push('/login')
+
+  }
+
+},
+
   methods: {
     getOrderStatusClass(status) {
       const classes = {
@@ -444,11 +481,29 @@ export default {
     saveProfile() {
       alert('Профиль сохранен!')
     },
-    logout() {
-      if (confirm('Вы действительно хотите выйти?')) {
-        this.isLoggedIn = false
-        this.$router.push('/')
+    async logout() {
+
+      if (!confirm('Вы действительно хотите выйти?')) {
+        return
       }
+
+      try {
+
+        await api.post('/logout')
+
+      } catch (error) {
+
+        console.log(error)
+
+      }
+
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+
+      this.isLoggedIn = false
+
+      this.$router.push('/login')
+
     }
   }
 }
