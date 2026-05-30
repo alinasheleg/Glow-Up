@@ -267,7 +267,10 @@
               </div>
             </div>
 
-            <!-- MODAL -->
+
+            <!-- MODAL ADDRESS -->
+
+
             <div 
               v-if="showAddressForm" 
               class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -275,70 +278,35 @@
               <div class="bg-white p-6 rounded-xl w-full max-w-lg">
 
                 <h2 class="text-xl font-bold mb-4">
-                  {{ mode === 'create' ? 'Новый адрес' : 'Редактировать адрес' }}
+                  {{ mode === 'edit' ? 'Редактирование адреса' : 'Новый адрес' }}
                 </h2>
 
                 <div class="space-y-3">
-
                   <input v-model="formAddress.title" placeholder="Название" class="w-full border p-2 rounded">
-
                   <input v-model="formAddress.city" placeholder="Город" class="w-full border p-2 rounded">
-
                   <input v-model="formAddress.street" placeholder="Улица" class="w-full border p-2 rounded">
-
                   <input v-model="formAddress.house" placeholder="Дом" class="w-full border p-2 rounded">
-
                   <input v-model="formAddress.apartment" placeholder="Квартира" class="w-full border p-2 rounded">
-
                   <textarea v-model="formAddress.comment" placeholder="Комментарий" class="w-full border p-2 rounded"></textarea>
-
                 </div>
 
-                <!-- МОДАЛКА ДОБАВЛЕНИЯ / РЕДАКТИРОВАНИЯ АДРЕСА -->
-                <div v-if="showAddressForm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                  <div class="bg-white p-6 rounded-xl w-full max-w-lg">
+                <div class="flex justify-end gap-2 mt-4">
+                  <button @click="closeAddressForm" class="px-4 py-2 bg-gray-200 rounded">
+                    Отмена
+                  </button>
 
-                  <h2 class="text-xl font-bold mb-4">
-                    {{ mode === 'edit' ? 'Редактирование адреса' : 'Новый адрес' }}
-                  </h2>
-
-                  <div class="space-y-3">
-
-                    <input v-model="formAddress.title" placeholder="Название (Дом, Офис)" class="w-full border p-2 rounded">
-
-                    <input v-model="formAddress.city" placeholder="Город" class="w-full border p-2 rounded">
-
-                    <input v-model="formAddress.street" placeholder="Улица" class="w-full border p-2 rounded">
-
-                    <input v-model="formAddress.house" placeholder="Дом" class="w-full border p-2 rounded">
-
-                    <input v-model="formAddress.apartment" placeholder="Квартира" class="w-full border p-2 rounded">
-
-                    <textarea v-model="formAddress.comment" placeholder="Комментарий" class="w-full border p-2 rounded"></textarea>
-
-                  </div>
-
-                    <div class="flex justify-end gap-2 mt-4">
-
-                      <button @click="closeAddressForm" class="px-4 py-2 bg-gray-200 rounded">
-                        Отмена
-                      </button>
-
-                      <button @click="saveAddress" class="px-4 py-2 bg-pink-600 text-white rounded">
-                        Сохранить
-                      </button>
-
-                    </div>
-
-                  </div>
+                  <button @click="saveAddress" class="px-4 py-2 bg-pink-600 text-white rounded">
+                    Сохранить
+                  </button>
                 </div>
 
               </div>
             </div>
-
           </div>
 
           <!-- Бонусы -->
+
+
           <div v-if="activeTab === 'bonuses'" class="p-6">
             <h2 class="text-2xl font-bold mb-6">Бонусная программа</h2>
             
@@ -416,10 +384,13 @@
 
               <div class="border-b pb-6">
                 <h3 class="font-bold mb-4">Безопасность</h3>
-                <button class="w-full text-left px-4 py-3 border rounded-lg hover:bg-gray-50 transition">
+                <button 
+                  @click="showPasswordModal = true"
+                  class="w-full text-left px-4 py-3 border rounded-lg hover:bg-gray-50 transition">
                   Изменить пароль
                 </button>
               </div>
+              
 
               <div>
                 <button 
@@ -431,11 +402,35 @@
               </div>
             </div>
           </div>
+          <!-- MODAL PASSWORD -->
+          <div v-if="showPasswordModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-white p-6 rounded-xl w-full max-w-md">
+
+              <h2 class="text-xl font-bold mb-4">Изменить пароль</h2>
+
+              <div class="space-y-3">
+                <input v-model="passwordForm.current_password" type="password" placeholder="Текущий пароль"
+                      class="w-full border p-2 rounded">
+
+                <input v-model="passwordForm.new_password" type="password" placeholder="Новый пароль"
+                      class="w-full border p-2 rounded">
+              </div>
+
+              <div class="flex justify-end gap-2 mt-4">
+                <button @click="showPasswordModal = false" class="px-4 py-2 bg-gray-200 rounded">
+                  Отмена
+                </button>
+
+                <button @click="changePassword" class="px-4 py-2 bg-pink-600 text-white rounded">
+                  Сохранить
+                </button>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
     </section>
-    
-
   </div>
 </template>
 
@@ -488,7 +483,12 @@ export default {
 
       orders: [],
       addresses: [],
-      bonusHistory: []
+      bonusHistory: [],
+      showPasswordModal: false,
+      passwordForm: {
+      current_password: '',
+      new_password: ''
+}
     }
   },
 
@@ -568,30 +568,6 @@ export default {
 },
 
   methods: {
-    
-    async addAddress() {
-      const res = await api.post('/addresses', this.newAddress)
-      this.addresses.push(res.data)
-
-      this.showAddressForm = false
-
-      this.newAddress = {
-        title: '',
-        city: '',
-        street: '',
-        house: '',
-        apartment: '',
-        comment: ''
-      }
-    },
-
-    async addAddress() {
-      const res = await api.post('/addresses', this.form)
-
-      this.addresses.push(res.data)
-
-      this.closeAddressForm()
-    },
 
     getOrderStatusClass(status) {
       const classes = {
@@ -602,6 +578,7 @@ export default {
       }
       return classes[status] || 'bg-gray-100 text-gray-700'
     },
+
     async saveProfile() {
 
   try {
@@ -624,15 +601,17 @@ export default {
 
     alert('Профиль успешно сохранен!')
 
-  } catch (error) {
-
+  } catch (error) 
+  {
     console.log(error)
+    console.log(error.response)
+    console.log(error.response?.data)
 
-    alert('Ошибка сохранения профиля')
+    alert(JSON.stringify(error.response?.data))
 
   }
 
-},
+    },
     async logout() {
 
       if (!confirm('Вы действительно хотите выйти?')) {
@@ -658,7 +637,7 @@ export default {
 
     },
 
-      openCreateAddress() {
+    openCreateAddress() {
     this.mode = 'create'
     this.showAddressForm = true
     this.editingId = null
@@ -672,81 +651,110 @@ export default {
       apartment: '',
       comment: ''
     }
-  },
+    },
 
-  openEditAddress(address) {
-    this.mode = 'edit'
-    this.showAddressForm = true
-    this.editingId = address.id
+    openEditAddress(address) {
+      this.mode = 'edit'
+      this.showAddressForm = true
+      this.editingId = address.id
 
-    this.formAddress = {
-      id: address.id,
-      title: address.title,
-      city: address.city,
-      street: address.street,
-      house: address.house,
-      apartment: address.apartment,
-      comment: address.comment
-    }
-  },
-
-  async saveAddress() {
-    try {
-
-      // CREATE
-      if (this.mode === 'create') {
-        const res = await api.post('/addresses', this.formAddress)
-        this.addresses.push(res.data)
+      this.formAddress = {
+        id: address.id,
+        title: address.title,
+        city: address.city,
+        street: address.street,
+        house: address.house,
+        apartment: address.apartment,
+        comment: address.comment
       }
+    },
 
-      // EDIT
-      if (this.mode === 'edit') {
-        const res = await api.put(
-          `/addresses/${this.editingId}`,
-          this.formAddress
-        )
-
-        const index = this.addresses.findIndex(a => a.id === this.editingId)
-        if (index !== -1) {
-          this.addresses[index] = res.data
+    async saveAddress() {
+      try {
+        if (this.mode === 'create') {
+          const res = await api.post('/addresses', this.formAddress)
+          this.addresses.push(res.data)
         }
+
+        if (this.mode === 'edit') {
+          const res = await api.put(
+            `/addresses/${this.editingId}`,
+            this.formAddress
+          )
+
+          const index = this.addresses.findIndex(a => a.id === this.editingId)
+          if (index !== -1) {
+            this.addresses[index] = res.data
+          }
+        }
+
+        this.closeAddressForm()
+
+      } catch (e) {
+        console.log(e)
+        alert('Ошибка сохранения адреса')
       }
+    },
 
-      this.closeAddressForm()
+    closeAddressForm() {
+      this.showAddressForm = false
+      this.mode = 'create'
+      this.editingId = null
 
-    } catch (e) {
-      console.log(e)
-      alert('Ошибка сохранения адреса')
-    }
-  },
+      this.formAddress = {
+        id: null,
+        title: '',
+        city: '',
+        street: '',
+        house: '',
+        apartment: '',
+        comment: ''
+      }
+    },
 
-  closeAddressForm() {
-    this.showAddressForm = false
-    this.mode = 'create'
-    this.editingId = null
+    async deleteAddress(id) {
+      if (!confirm('Удалить адрес?')) return
 
-    this.formAddress = {
-      id: null,
-      title: '',
-      city: '',
-      street: '',
-      house: '',
-      apartment: '',
-      comment: ''
-    }
-  },
+      try {
 
-  async deleteAddress(id) {
-    if (!confirm('Удалить адрес?')) return
+        const res = await api.delete(`/addresses/${id}`)
 
-    try {
-      await api.delete(`/addresses/${id}`)
-      this.addresses = this.addresses.filter(a => a.id !== id)
-    } catch (e) {
-      console.log(e)
-      alert('Ошибка удаления адреса')
+        console.log('DELETE OK', res)
+
+        this.addresses = this.addresses.filter(a => a.id !== id)
+
+      } catch (e) {
+
+        console.log('DELETE ERROR')
+        console.log(e.response)
+
+        alert(
+          e.response?.data?.message ||
+          'Ошибка удаления адреса'
+        )
+      }
+    },
+    async changePassword() {
+      try 
+      {
+        const res = await api.post('/user/change-password', this.passwordForm)
+
+        alert(res.data.message)
+
+        this.showPasswordModal = false
+
+        this.passwordForm = 
+        {
+          current_password: '',
+          new_password: ''
+        }
+
+      } catch (e) {
+        console.log(e)
+
+        alert(e.response?.data?.message || 'Ошибка смены пароля')
+      }
     }
   }
-}
 }
 </script>
