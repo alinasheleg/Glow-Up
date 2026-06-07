@@ -501,29 +501,25 @@ export default {
     return
   }
 
-  try {
-
+ try {
     const userResponse = await api.get('/me')
-
     this.user = {
       ...this.user,
       ...userResponse.data
     }
-
     this.isLoggedIn = true
-
-  } catch (error) {
-
+} catch (error) {
     if (error.response?.status === 401) {
-
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-
       this.$router.push('/login')
-
     }
-
-  }
+    if (error.response?.status === 403) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      this.$router.push('/banned')
+    }
+}
 
   // отдельные запросы
   try {

@@ -31,6 +31,8 @@ import PartnerRegister from '@/views/PartnerRegister.vue'
 
 import ProductDetails from '@/views/ProductDetails.vue'
 
+import Banned from '@/views/Banned.vue'
+
 // ROUTES
 const routes = [
 
@@ -187,7 +189,13 @@ const routes = [
     path: '/product/:id',
     name: 'ProductDetails',
     component: ProductDetails
-  }
+  },
+
+  {
+  path: '/banned',
+  name: 'Banned',
+  component: Banned
+}
 
 ]
 
