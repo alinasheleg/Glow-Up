@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   name: 'PartnerRegister',
 
@@ -86,8 +87,9 @@ export default {
     }
   },
 
-  methods: {
-    registerPartner() {
+    methods: {
+    async registerPartner() {
+
       this.error = ''
 
       if (this.password !== this.confirmPassword) {
@@ -95,20 +97,28 @@ export default {
         return
       }
 
-      const partnerData = {
-        name: this.name,
-        email: this.email,
-        password: this.password
+      try {
+
+        const response = await axios.post(
+          'http://127.0.0.1:8000/api/partner/register',
+          {
+            name: this.name,
+            email: this.email,
+            password: this.password
+          }
+        )
+
+        alert(response.data.message)
+
+        this.$router.push('/partner-login')
+
+      } catch (error) {
+
+        this.error =
+          error.response?.data?.message ||
+          'Ошибка регистрации'
+
       }
-
-      // Сохраняем пользователя
-      localStorage.setItem('partnerUser', JSON.stringify(partnerData))
-
-      // Авторизация после регистрации
-      localStorage.setItem('partnerAuth', 'true')
-
-      // Переход в кабинет
-      this.$router.push('/partner')
     }
   }
 }

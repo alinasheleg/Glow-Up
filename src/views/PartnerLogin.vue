@@ -52,10 +52,36 @@ export default {
     }
   },
   methods: {
-    loginPartner() {
+  async loginPartner() {
+
+    this.error = ''
+
+    try {
+
+      const response = await axios.post(
+        'http://127.0.0.1:8000/api/partner/login',
+        {
+          email: this.email,
+          password: this.password
+        }
+      )
+
+      const partner = response.data.partner
+
+      // сохраняем ТОЛЬКО после успешного approve
+      localStorage.setItem('partner', JSON.stringify(partner))
       localStorage.setItem('partnerAuth', 'true')
+
       this.$router.push('/partner')
+
+    } catch (error) {
+
+      this.error =
+        error.response?.data?.message ||
+        'Ошибка входа'
+
     }
   }
+}
 }
 </script>
