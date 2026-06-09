@@ -1,15 +1,11 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-   
-    
     <section class="max-w-7xl mx-auto px-4 py-12">
       <!-- Если не авторизован -->
       <div v-if="!isLoggedIn" class="bg-white rounded-xl p-12 text-center shadow-md">
         <span class="text-6xl mb-4 block">👤</span>
         <h2 class="text-2xl font-bold mb-4">Войдите в аккаунт</h2>
-        <p class="text-gray-600 mb-6">
-          Для доступа к личному кабинету необходимо авторизоваться
-        </p>
+        <p class="text-gray-600 mb-6">Для доступа к личному кабинету необходимо авторизоваться</p>
         <router-link to="/login">
           <button class="bg-pink-600 text-white px-8 py-3 rounded-full hover:bg-pink-700 transition font-medium">
             Войти
@@ -38,8 +34,8 @@
         <!-- Табы -->
         <div class="mb-6">
           <div class="flex flex-wrap gap-2 bg-white rounded-xl p-2 shadow-md">
-            <button 
-              v-for="tab in tabs" 
+            <button
+              v-for="tab in tabs"
               :key="tab.id"
               @click="activeTab = tab.id"
               class="px-6 py-3 rounded-lg font-medium transition"
@@ -53,10 +49,11 @@
 
         <!-- Контент табов -->
         <div class="bg-white rounded-xl shadow-md">
+
           <!-- Мои заказы -->
           <div v-if="activeTab === 'orders'" class="p-6">
             <h2 class="text-2xl font-bold mb-6">Мои заказы</h2>
-            
+
             <div v-if="orders.length === 0" class="text-center py-12">
               <span class="text-6xl mb-4 block">📦</span>
               <p class="text-gray-600 mb-4">У вас пока нет заказов</p>
@@ -68,8 +65,8 @@
             </div>
 
             <div v-else class="space-y-4">
-              <div 
-                v-for="order in orders" 
+              <div
+                v-for="order in orders"
                 :key="order.id"
                 class="border rounded-xl p-6 hover:shadow-md transition"
               >
@@ -77,7 +74,7 @@
                   <div>
                     <div class="flex items-center gap-3 mb-2">
                       <h3 class="font-bold text-lg">Заказ №{{ order.id }}</h3>
-                      <span 
+                      <span
                         class="px-3 py-1 rounded-full text-xs font-bold"
                         :class="getOrderStatusClass(order.status)"
                       >
@@ -93,11 +90,7 @@
                 </div>
 
                 <div class="space-y-3 mb-4">
-                  <div 
-                    v-for="item in order.items" 
-                    :key="item.id"
-                    class="flex gap-3"
-                  >
+                  <div v-for="item in order.items" :key="item.id" class="flex gap-3">
                     <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
                       <span class="text-2xl">{{ item.icon }}</span>
                     </div>
@@ -111,8 +104,6 @@
                     </div>
                   </div>
                 </div>
-
-            
               </div>
             </div>
           </div>
@@ -120,70 +111,53 @@
           <!-- Личные данные -->
           <div v-if="activeTab === 'profile'" class="p-6">
             <h2 class="text-2xl font-bold mb-6">Личные данные</h2>
-            
+
             <form @submit.prevent="saveProfile" class="max-w-2xl space-y-6">
               <div class="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Имя
-                  </label>
-                  <input 
-                    v-model="user.name"
-                    type="text" 
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Имя</label>
+                  <input
+                    v-model="user.name" type="text"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Фамилия
-                  </label>
-                  <input 
-                    v-model="user.lastName"
-                    type="text" 
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Фамилия</label>
+                  <input
+                    v-model="user.lastName" type="text"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Email
-                </label>
-                <input 
-                  v-model="user.email"
-                  type="email" 
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                  v-model="user.email" type="email"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Телефон
-                </label>
-                <input 
-                  v-model="user.phone"
-                  type="tel" 
+                <label class="block text-sm font-medium text-gray-700 mb-2">Телефон</label>
+                <input
+                  v-model="user.phone" type="tel"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                 />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Дата рождения
-                </label>
-                <input 
-                  v-model="user.birthday"
-                  type="date" 
+                <label class="block text-sm font-medium text-gray-700 mb-2">Дата рождения</label>
+                <input
+                  v-model="user.birthday" type="date"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                 />
                 <p class="text-xs text-gray-500 mt-1">Получите подарок в день рождения 🎁</p>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Пол
-                </label>
-                <select 
+                <label class="block text-sm font-medium text-gray-700 mb-2">Пол</label>
+                <select
                   v-model="user.gender"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                 >
@@ -193,10 +167,7 @@
                 </select>
               </div>
 
-              <button 
-                type="submit"
-                class="w-full bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700 transition font-medium"
-              >
+              <button type="submit" class="w-full bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700 transition font-medium">
                 Сохранить изменения
               </button>
             </form>
@@ -206,45 +177,30 @@
           <div v-if="activeTab === 'addresses'" class="p-6">
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-2xl font-bold">Адреса доставки</h2>
-
-              <button 
-                @click="openCreateAddress"
-                class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition font-medium"
-              >
+              <button @click="openCreateAddress" class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition font-medium">
                 + Добавить адрес
               </button>
             </div>
 
-            <!-- empty -->
             <div v-if="addresses.length === 0" class="text-center py-12">
               <span class="text-6xl mb-4 block">📍</span>
               <p class="text-gray-600 mb-4">У вас пока нет сохраненных адресов</p>
             </div>
 
-            <!-- list -->
             <div v-else class="grid md:grid-cols-2 gap-4">
-              <div 
-                v-for="address in addresses" 
+              <div
+                v-for="address in addresses"
                 :key="address.id"
                 class="border rounded-xl p-6 hover:shadow-md transition"
               >
                 <div class="flex items-start justify-between mb-3">
-                  
                   <div>
                     <h3 class="font-bold mb-1">{{ address.title }}</h3>
-
-                    <span 
-                      v-if="address.is_default"
-                      class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded-full font-medium"
-                    >
+                    <span v-if="address.is_default" class="text-xs bg-pink-100 text-pink-600 px-2 py-1 rounded-full font-medium">
                       Основной
                     </span>
                   </div>
-
-                  <button 
-                    class="text-gray-400 hover:text-red-500"
-                    @click="deleteAddress(address.id)"
-                  >
+                  <button class="text-gray-400 hover:text-red-500" @click="deleteAddress(address.id)">
                     <span class="text-xl">🗑️</span>
                   </button>
                 </div>
@@ -253,34 +209,20 @@
                   {{ address.city }}, {{ address.street }}, {{ address.house }}
                   <span v-if="address.apartment">, кв. {{ address.apartment }}</span>
                 </p>
+                <p v-if="address.comment" class="text-xs text-gray-500 mt-1">{{ address.comment }}</p>
 
-                <p v-if="address.comment" class="text-xs text-gray-500 mt-1">
-                  {{ address.comment }}
-                </p>
-
-                <button 
-                  class="text-sm text-pink-600 hover:text-pink-700 mt-3"
-                  @click="openEditAddress(address)"
-                >
+                <button class="text-sm text-pink-600 hover:text-pink-700 mt-3" @click="openEditAddress(address)">
                   Редактировать
                 </button>
               </div>
             </div>
 
-
             <!-- MODAL ADDRESS -->
-
-
-            <div 
-              v-if="showAddressForm" 
-              class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-            >
+            <div v-if="showAddressForm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
               <div class="bg-white p-6 rounded-xl w-full max-w-lg">
-
                 <h2 class="text-xl font-bold mb-4">
                   {{ mode === 'edit' ? 'Редактирование адреса' : 'Новый адрес' }}
                 </h2>
-
                 <div class="space-y-3">
                   <input v-model="formAddress.title" placeholder="Название" class="w-full border p-2 rounded">
                   <input v-model="formAddress.city" placeholder="Город" class="w-full border p-2 rounded">
@@ -289,27 +231,18 @@
                   <input v-model="formAddress.apartment" placeholder="Квартира" class="w-full border p-2 rounded">
                   <textarea v-model="formAddress.comment" placeholder="Комментарий" class="w-full border p-2 rounded"></textarea>
                 </div>
-
                 <div class="flex justify-end gap-2 mt-4">
-                  <button @click="closeAddressForm" class="px-4 py-2 bg-gray-200 rounded">
-                    Отмена
-                  </button>
-
-                  <button @click="saveAddress" class="px-4 py-2 bg-pink-600 text-white rounded">
-                    Сохранить
-                  </button>
+                  <button @click="closeAddressForm" class="px-4 py-2 bg-gray-200 rounded">Отмена</button>
+                  <button @click="saveAddress" class="px-4 py-2 bg-pink-600 text-white rounded">Сохранить</button>
                 </div>
-
               </div>
             </div>
           </div>
 
           <!-- Бонусы -->
-
-
           <div v-if="activeTab === 'bonuses'" class="p-6">
             <h2 class="text-2xl font-bold mb-6">Бонусная программа</h2>
-            
+
             <div class="bg-gradient-to-r from-pink-500 to-purple-600 rounded-2xl p-8 text-white mb-6">
               <div class="text-center">
                 <div class="text-5xl font-bold mb-2">{{ user.bonuses }}</div>
@@ -339,8 +272,8 @@
             <div class="border-t pt-6">
               <h3 class="font-bold mb-4">История бонусов</h3>
               <div class="space-y-3">
-                <div 
-                  v-for="bonus in bonusHistory" 
+                <div
+                  v-for="bonus in bonusHistory"
                   :key="bonus.id"
                   class="flex justify-between items-center p-4 bg-gray-50 rounded-lg"
                 >
@@ -348,10 +281,7 @@
                     <p class="font-medium">{{ bonus.description }}</p>
                     <p class="text-xs text-gray-500">{{ bonus.date }}</p>
                   </div>
-                  <div 
-                    class="font-bold"
-                    :class="bonus.type === 'earned' ? 'text-green-600' : 'text-red-600'"
-                  >
+                  <div class="font-bold" :class="bonus.type === 'earned' ? 'text-green-600' : 'text-red-600'">
                     {{ bonus.type === 'earned' ? '+' : '-' }}{{ bonus.amount }}
                   </div>
                 </div>
@@ -362,7 +292,7 @@
           <!-- Настройки -->
           <div v-if="activeTab === 'settings'" class="p-6">
             <h2 class="text-2xl font-bold mb-6">Настройки</h2>
-            
+
             <div class="max-w-2xl space-y-6">
               <div class="border-b pb-6">
                 <h3 class="font-bold mb-4">Уведомления</h3>
@@ -384,16 +314,16 @@
 
               <div class="border-b pb-6">
                 <h3 class="font-bold mb-4">Безопасность</h3>
-                <button 
+                <button
                   @click="showPasswordModal = true"
-                  class="w-full text-left px-4 py-3 border rounded-lg hover:bg-gray-50 transition">
+                  class="w-full text-left px-4 py-3 border rounded-lg hover:bg-gray-50 transition"
+                >
                   Изменить пароль
                 </button>
               </div>
-              
 
               <div>
-                <button 
+                <button
                   @click="logout"
                   class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition font-medium"
                 >
@@ -402,35 +332,59 @@
               </div>
             </div>
           </div>
-          <!-- MODAL PASSWORD -->
-          <div v-if="showPasswordModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div class="bg-white p-6 rounded-xl w-full max-w-md">
 
-              <h2 class="text-xl font-bold mb-4">Изменить пароль</h2>
+          <!-- ✅ Кабинет партнёра — отдельный таб на правильном уровне -->
+          <div v-if="activeTab === 'partner'" class="p-6">
+            <h2 class="text-2xl font-bold mb-6">Кабинет партнёра</h2>
 
-              <div class="space-y-3">
-                <input v-model="passwordForm.current_password" type="password" placeholder="Текущий пароль"
-                      class="w-full border p-2 rounded">
-
-                <input v-model="passwordForm.new_password" type="password" placeholder="Новый пароль"
-                      class="w-full border p-2 rounded">
-              </div>
-
-              <div class="flex justify-end gap-2 mt-4">
-                <button @click="showPasswordModal = false" class="px-4 py-2 bg-gray-200 rounded">
-                  Отмена
-                </button>
-
-                <button @click="changePassword" class="px-4 py-2 bg-pink-600 text-white rounded">
-                  Сохранить
-                </button>
-              </div>
-
+            <div class="bg-gradient-to-r from-purple-500 to-pink-600 rounded-2xl p-8 text-white mb-6">
+              <h3 class="text-xl font-bold mb-2">Партнёрская программа Glow-Up</h3>
+              <p class="opacity-90">Управляйте товарами и отслеживайте продажи.</p>
             </div>
+
+            <div class="grid md:grid-cols-4 gap-4 mb-8">
+              <div class="bg-pink-50 p-5 rounded-xl">
+                <p class="text-sm text-gray-500">Товары</p>
+                <p class="text-3xl font-bold text-pink-600">0</p>
+              </div>
+              <div class="bg-purple-50 p-5 rounded-xl">
+                <p class="text-sm text-gray-500">Заказы</p>
+                <p class="text-3xl font-bold text-purple-600">0</p>
+              </div>
+              <div class="bg-pink-50 p-5 rounded-xl">
+                <p class="text-sm text-gray-500">Продажи</p>
+                <p class="text-3xl font-bold text-pink-600">0 ₸</p>
+              </div>
+              <div class="bg-purple-50 p-5 rounded-xl">
+                <p class="text-sm text-gray-500">Доход</p>
+                <p class="text-3xl font-bold text-purple-600">0 ₸</p>
+              </div>
+            </div>
+
+            <button class="bg-pink-600 text-white px-6 py-3 rounded-lg hover:bg-pink-700 transition">
+              Добавить товар
+            </button>
           </div>
+
         </div>
       </div>
     </section>
+
+    <!-- MODAL PASSWORD -->
+    <div v-if="showPasswordModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div class="bg-white p-6 rounded-xl w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Изменить пароль</h2>
+        <div class="space-y-3">
+          <input v-model="passwordForm.current_password" type="password" placeholder="Текущий пароль" class="w-full border p-2 rounded">
+          <input v-model="passwordForm.new_password" type="password" placeholder="Новый пароль" class="w-full border p-2 rounded">
+        </div>
+        <div class="flex justify-end gap-2 mt-4">
+          <button @click="showPasswordModal = false" class="px-4 py-2 bg-gray-200 rounded">Отмена</button>
+          <button @click="changePassword" class="px-4 py-2 bg-pink-600 text-white rounded">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -455,7 +409,8 @@ export default {
         { id: 'profile', name: 'Профиль', icon: '👤' },
         { id: 'addresses', name: 'Адреса', icon: '📍' },
         { id: 'bonuses', name: 'Бонусы', icon: '🎁' },
-        { id: 'settings', name: 'Настройки', icon: '⚙️' }
+        { id: 'settings', name: 'Настройки', icon: '⚙️' },
+         { id: 'partner', name: 'Кабинет партнёра', icon: '🤝' }
       ],
 
       user: {
