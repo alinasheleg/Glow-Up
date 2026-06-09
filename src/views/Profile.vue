@@ -404,14 +404,14 @@ export default {
       showAddressForm: false,
       mode: 'create',
 
-      tabs: [
+       tabs: [
         { id: 'orders', name: 'Заказы', icon: '📦' },
         { id: 'profile', name: 'Профиль', icon: '👤' },
         { id: 'addresses', name: 'Адреса', icon: '📍' },
         { id: 'bonuses', name: 'Бонусы', icon: '🎁' },
         { id: 'settings', name: 'Настройки', icon: '⚙️' },
-         { id: 'partner', name: 'Кабинет партнёра', icon: '🤝' }
       ],
+        isPartner: false,
 
       user: {
         name: '',
@@ -447,23 +447,39 @@ export default {
     }
   },
 
-  async mounted() {
-
+ async mounted() {
   const token = localStorage.getItem('token')
+  const partnerAuth = localStorage.getItem('partnerAuth')
 
+  // Если партнёр
+  if (partnerAuth && !token) {
+    const partner = JSON.parse(localStorage.getItem('partner') || '{}')
+    this.user = {
+      ...this.user,
+      name: partner.name || 'Партнёр',
+      email: partner.email || ''
+    }
+    this.isLoggedIn = true
+    this.isPartner = true
+    this.tabs = [
+      { id: 'partner', name: 'Кабинет партнёра', icon: '🤝' },
+      { id: 'settings', name: 'Настройки', icon: '⚙️' }
+    ]
+    this.activeTab = 'partner'
+    return
+  }
+
+  // Если обычный юзер
   if (!token) {
     this.$router.push('/login')
     return
   }
 
- try {
+  try {
     const userResponse = await api.get('/me')
-    this.user = {
-      ...this.user,
-      ...userResponse.data
-    }
+    this.user = { ...this.user, ...userResponse.data }
     this.isLoggedIn = true
-} catch (error) {
+  } catch (error) {
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
@@ -474,48 +490,32 @@ export default {
       localStorage.removeItem('user')
       this.$router.push('/banned')
     }
-}
+  }
 
-  // отдельные запросы
+  // обычные вкладки только для юзеров
+  this.isPartner = false
+
   try {
     const ordersResponse = await api.get('/orders')
     this.orders = ordersResponse.data
-  } catch (e) {
-    console.log(e)
-  }
+  } catch (e) { console.log(e) }
 
   try {
     const addressesResponse = await api.get('/addresses')
-
     const raw = addressesResponse.data
-
-    const list = Array.isArray(raw)
-      ? raw
-      : raw?.data ?? []
-
+    const list = Array.isArray(raw) ? raw : raw?.data ?? []
     this.addresses = list.map(a => ({
-      id: a.id,
-      title: a.title,
-      city: a.city,
-      street: a.street,
-      house: a.house,
-      apartment: a.apartment,
-      is_default: a.is_default,
-      comment: a.comment
+      id: a.id, title: a.title, city: a.city,
+      street: a.street, house: a.house,
+      apartment: a.apartment, is_default: a.is_default, comment: a.comment
     }))
-  } catch (e) {
-    console.log(e)
-  }
+  } catch (e) { console.log(e) }
 
   try {
     const bonusesResponse = await api.get('/bonuses')
-
     this.user.bonuses = bonusesResponse.data.bonuses || 0
     this.bonusHistory = bonusesResponse.data.history || []
-
-  } catch (e) {
-    console.log(e)
-  }
+  } catch (e) { console.log(e) }
 },
 
   methods: {
@@ -565,28 +565,26 @@ export default {
     },
     async logout() {
 
-      if (!confirm('Вы действительно хотите выйти?')) {
-        return
-      }
+  if (!confirm('Вы действительно хотите выйти?')) {
+    return
+  }
 
-      try {
+  try {
+    await api.post('/logout')
+  } catch (error) {
+    console.log(error)
+  }
 
-        await api.post('/logout')
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
 
-      } catch (error) {
+  localStorage.removeItem('partnerAuth')
+  localStorage.removeItem('partner')
 
-        console.log(error)
+  this.isLoggedIn = false
 
-      }
-
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-
-      this.isLoggedIn = false
-
-      this.$router.push('/login')
-
-    },
+  this.$router.push('/login')
+},
 
     openCreateAddress() {
     this.mode = 'create'

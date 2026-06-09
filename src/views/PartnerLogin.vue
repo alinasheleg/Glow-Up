@@ -7,25 +7,17 @@
       <form @submit.prevent="loginPartner" class="space-y-5">
         <div>
           <label class="block mb-2 font-medium">Email</label>
-          <input
-            v-model="email"
-            type="email"
-            placeholder="example@email.com"
-            class="w-full border rounded-lg px-4 py-3"
-            required
-          />
+          <input v-model="email" type="email" placeholder="example@email.com"
+            class="w-full border rounded-lg px-4 py-3" required />
         </div>
 
         <div>
           <label class="block mb-2 font-medium">Пароль</label>
-          <input
-            v-model="password"
-            type="password"
-            placeholder="Введите пароль"
-            class="w-full border rounded-lg px-4 py-3"
-            required
-          />
+          <input v-model="password" type="password" placeholder="Введите пароль"
+            class="w-full border rounded-lg px-4 py-3" required />
         </div>
+
+        <p v-if="error" class="text-red-500 text-sm">{{ error }}</p>
 
         <button class="w-full bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700 transition">
           Войти
@@ -43,45 +35,93 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'PartnerLogin',
+
   data() {
     return {
       email: '',
-      password: ''
+      password: '',
+      error: ''
     }
   },
+
   methods: {
-  async loginPartner() {
+    async loginPartner() {
+      this.error = ''
 
-    this.error = ''
+      try {
+        const response = await axios.post(
+          'http://127.0.0.1:8001/api/partner/login',
+          {
+            email: this.email,
+            password: this.password
+          }
+        )
 
-    try {
+        const partner = response.data.partner
 
-      const response = await axios.post(
-        'http://127.0.0.1:8000/api/partner/login',
-        {
-          email: this.email,
-          password: this.password
+        console.log('RESPONSE', response.data)
+        console.log('PARTNER', partner)
+        console.log('STATUS', partner.status)
+
+        localStorage.setItem('partner', JSON.stringify(partner))
+        localStorage.setItem('partnerAuth', 'true')
+
+        if (partner.status === 'pending') {
+          localStorage.setItem('partnerPendingMessage', 'Ваша заявка находится на рассмотрении.')
+          this.$router.push('/partner-pending')
+          return
         }
-      )
 
-      const partner = response.data.partner
+        if (partner.status === 'rejected') {
+          localStorage.setItem('partnerPendingMessage', 'Ваша заявка отклонена.')
+          this.$router.push('/partner-pending')
+          return
+        }
 
-      // сохраняем ТОЛЬКО после успешного approve
-      localStorage.setItem('partner', JSON.stringify(partner))
-      localStorage.setItem('partnerAuth', 'true')
+        this.$router.push('/profile')
 
-      this.$router.push('/partner')
+      } catch (error) {
+        console.log('ERROR RESPONSE', error.response?.data)
 
-    } catch (error) {
+        const message = error.response?.data?.message || 'Ошибка входа'
+        const partnerFromError = error.response?.data?.partner
 
-      this.error =
-        error.response?.data?.message ||
-        'Ошибка входа'
+        if (partnerFromError) {
+          localStorage.setItem('partner', JSON.stringify(partnerFromError))
+          localStorage.setItem('partnerAuth', 'true')
 
+          if (partnerFromError.status === 'pending') {
+            localStorage.setItem('partnerPendingMessage', 'Ваша заявка находится на рассмотрении.')
+            this.$router.push('/partner-pending')
+            return
+          }
+
+          if (partnerFromError.status === 'rejected') {
+            localStorage.setItem('partnerPendingMessage', 'Ваша заявка отклонена.')
+            this.$router.push('/partner-pending')
+            return
+          }
+        }
+
+         if (
+    message.includes('рассмотрении') ||
+    message.includes('отклонена') ||
+    message.includes('одобрена') ||   
+    message.includes('pending') ||
+    message.includes('rejected')
+  ) {
+    localStorage.setItem('partnerPendingMessage', message)
+    this.$router.push('/partner-pending')
+    return
+  }
+
+        this.error = message
+      }
     }
   }
-}
 }
 </script>

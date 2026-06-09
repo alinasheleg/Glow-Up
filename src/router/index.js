@@ -33,6 +33,9 @@ import ProductDetails from '@/views/ProductDetails.vue'
 
 import Banned from '@/views/Banned.vue'
 
+import PartnerPending from '@/views/PartnerPending.vue'
+
+
 // ROUTES
 const routes = [
 
@@ -195,6 +198,12 @@ const routes = [
   path: '/banned',
   name: 'Banned',
   component: Banned
+},
+
+{
+  path: '/partner-pending',
+  name: 'PartnerPending',
+  component: PartnerPending
 }
 
 ]
@@ -209,17 +218,17 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
 
   const token = localStorage.getItem('token')
+  const partnerAuth = localStorage.getItem('partnerAuth')
 
-  // если страница требует авторизацию
-  if (to.meta.requiresAuth && !token) {
-
+  if (
+    to.meta.requiresAuth &&
+    !token &&
+    !partnerAuth
+  ) {
     next('/login')
     return
-
   }
 
-  // если уже авторизован
-  // не пускаем на login/register
   if (
     token &&
     (
@@ -227,14 +236,12 @@ router.beforeEach((to, from, next) => {
       to.path === '/register'
     )
   ) {
-
     next('/profile')
     return
-
   }
 
-  next()
 
+  next()
 })
 
 export default router 
