@@ -26,7 +26,7 @@
         >
           <router-link :to="`/product/${product.id}`">
             <div class="h-56 bg-gray-100 rounded-xl flex items-center justify-center text-5xl">
-              {{ product.image }}
+              {{ product.title }}
             </div>
 
             <h2 class="font-bold text-lg mt-4">{{ product.name }}</h2>
@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
@@ -63,42 +65,20 @@ export default {
         'Волосы',
         'Для тела'
       ],
-      products: [
-        {
-          id: 1,
-          name: 'Крем для лица',
-          brand: 'La Roche-Posay',
-          category: 'Уход',
-          price: 4500,
-          image: '🧴'
-        },
-        {
-          id: 2,
-          name: 'Помада',
-          brand: 'Maybelline',
-          category: 'Косметика',
-          price: 3500,
-          image: '💄'
-        },
-        {
-          id: 3,
-          name: 'Парфюм Bloom',
-          brand: 'Gucci',
-          category: 'Парфюм',
-          price: 12000,
-          image: '🌸'
-        }
-      ]
+      products: []
     }
   },
+
   computed: {
     filteredProducts() {
       if (this.selectedCategory === 'Все') return this.products
-      return this.products.filter(
-        p => p.category === this.selectedCategory
+
+      return this.products.filter(p =>
+        p.category === this.selectedCategory
       )
     }
   },
+
   methods: {
     addToCart(product) {
       let cart = JSON.parse(localStorage.getItem('cart')) || []
@@ -106,6 +86,28 @@ export default {
       localStorage.setItem('cart', JSON.stringify(cart))
       alert('Добавлено в корзину')
     }
+  },
+
+  async mounted() {
+    try {
+      console.log('LOAD PRODUCTS...')
+
+      const response = await axios.get('http://127.0.0.1:8000/api/products')
+
+      console.log('API RESPONSE:', response.data)
+
+      this.products = response.data.map(product => ({
+        id: product.id,
+        name: product.title,
+        brand: product.brand,
+        category: product.category ?? 'Все',
+        price: product.price,
+        image: product.image
+      }))
+    } catch (error) {
+      console.error('Ошибка загрузки товаров:', error)
+    }
   }
 }
+
 </script>
