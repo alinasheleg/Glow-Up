@@ -1,14 +1,11 @@
 <template>
   <div class="min-h-screen bg-gray-50">
 
-    <!-- Баннер -->
     <Banner />
 
-    <!-- Верхняя панель -->
     <section class="max-w-7xl mx-auto px-4 py-8">
       <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
 
-        <!-- Поиск -->
         <div class="flex-1 w-full">
           <input
             v-model="search"
@@ -18,11 +15,7 @@
           />
         </div>
 
-        <!-- Сортировка -->
-        <select
-          v-model="sort"
-          class="px-4 py-3 rounded-2xl border border-gray-300"
-        >
+        <select v-model="sort" class="px-4 py-3 rounded-2xl border border-gray-300">
           <option value="default">Сортировка</option>
           <option value="cheap">Сначала дешевые</option>
           <option value="expensive">Сначала дорогие</option>
@@ -30,33 +23,26 @@
       </div>
     </section>
 
-    <!-- Основной блок -->
     <section class="max-w-7xl mx-auto px-4 pb-12">
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
-        <!-- Левая колонка категории -->
         <aside class="bg-white rounded-2xl shadow-md p-6 h-fit">
           <h2 class="text-2xl font-bold mb-6">Категории</h2>
-
           <div class="space-y-3">
             <button
               v-for="cat in categories"
               :key="cat"
               @click="selectedCategory = cat"
               class="w-full text-left px-4 py-3 rounded-xl transition"
-              :class="selectedCategory === cat
-                ? 'bg-pink-500 text-white'
-                : 'bg-gray-100 hover:bg-pink-100'"
+              :class="selectedCategory === cat ? 'bg-pink-500 text-white' : 'bg-gray-100 hover:bg-pink-100'"
             >
               {{ cat }}
             </button>
           </div>
         </aside>
 
-        <!-- Правая колонка товары -->
         <div class="lg:col-span-3">
 
-          <!-- Фильтр -->
           <div class="flex gap-3 mb-8 flex-wrap">
             <button
               class="px-5 py-2 rounded-xl"
@@ -65,7 +51,6 @@
             >
               Все
             </button>
-
             <button
               class="px-5 py-2 rounded-xl"
               :class="filter==='popular' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
@@ -73,7 +58,6 @@
             >
               Популярные
             </button>
-
             <button
               class="px-5 py-2 rounded-xl"
               :class="filter==='new' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
@@ -83,11 +67,48 @@
             </button>
           </div>
 
-          <h3 class="text-2xl font-bold mb-6">Рекомендованные  товары</h3>
+          <h3 class="text-2xl font-bold mb-6">Рекомендованные товары</h3>
 
+          <div v-if="loading" class="text-center py-20 text-gray-400">
+            <p class="text-xl">Загрузка товаров...</p>
+          </div>
+
+          <div v-else-if="filteredProducts.length === 0" class="text-center py-20 text-gray-400">
+            <p class="text-xl">Товаров не найдено</p>
+          </div>
+
+          <div v-else class="grid md:grid-cols-3 gap-6">
+            <div
+              v-for="product in filteredProducts"
+              :key="product.id"
+              class="bg-white rounded-2xl shadow p-4 hover:shadow-lg"
+            >
+              <router-link :to="`/product/${product.id}`">
+                <div class="h-48 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
+                  <img
+                    v-if="product.image"
+                    :src="`http://127.0.0.1:8001/storage/${product.image}`"
+                    class="w-full h-full object-cover"
+                  />
+                  <span v-else class="text-gray-300 text-5xl">🛍️</span>
+                </div>
+                <h2 class="font-bold text-lg mt-3">{{ product.name }}</h2>
+                <p class="text-gray-400 text-sm">{{ product.brand }}</p>
+                <p class="text-gray-400 text-xs">{{ product.category }}</p>
+              </router-link>
+              <div class="flex justify-between items-center mt-3">
+                <span class="text-pink-600 font-bold text-xl">{{ product.price }} ₸</span>
+                <button
+                  @click="addToCart(product)"
+                  class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
+                >
+                  В корзину
+                </button>
+              </div>
+            </div>
+          </div>
 
         </div>
-
       </div>
     </section>
 
@@ -95,47 +116,16 @@
   </div>
 </template>
 
-
-
 <script>
-import Header from '../components/Header.vue'
+import axios from 'axios'
 import Banner from '../components/Banner.vue'
-import Categories from '../components/Categories.vue'
 import PromoSection from '../components/PromoSection.vue'
-import Sales from './Sales.vue'
-import New from './New.vue'
-import Footer from '../components/Footer.vue'
-import Payment from './Payment.vue'
-import Profile from './Profile.vue'
-import About from './About.vue'
-import CategoryBodycare from './CategoryBodycare.vue'
-import CategoryHaircare from './CategoryHaircare.vue'
-import CategoryMakeup from './CategoryMakeup.vue'
-import CategoryMen from './CategoryMen.vue'
-import CategoryPerfume from './CategoryPerfume.vue'
-import CategorySkincare from './CategorySkincare.vue'
-
 
 export default {
   name: 'Home',
   components: {
-    Header,
     Banner,
-    Categories,
-    Sales,
-    New,
-    Payment,
-    Profile,
-    About,
-    CategoryBodycare,
-    CategoryHaircare,
-    CategoryMakeup,
-    CategoryMen,
-    CategorySkincare,
-    CategoryPerfume,
     PromoSection,
-
-    Footer
   },
   data() {
     return {
@@ -143,7 +133,8 @@ export default {
       sort: 'default',
       filter: 'all',
       selectedCategory: 'Все',
-
+      loading: true,
+      products: [],
       categories: [
         'Все',
         'Уход за кожей',
@@ -153,33 +144,6 @@ export default {
         'Для тела',
         'Для мужчин'
       ],
-
-      products: [
-        {
-          id: 1,
-          name: 'Матовая помада',
-          description: 'Стойкая текстура',
-          price: 2490,
-          category: 'Макияж',
-          image: 'https://source.unsplash.com/400x400/?lipstick'
-        },
-        {
-          id: 2,
-          name: 'Крем для лица',
-          description: 'Увлажнение кожи',
-          price: 3290,
-          category: 'Уход за кожей',
-          image: 'https://source.unsplash.com/400x400/?cream'
-        },
-        {
-          id: 3,
-          name: 'Парфюм',
-          description: 'Легкий аромат',
-          price: 5990,
-          category: 'Парфюмерия',
-          image: 'https://source.unsplash.com/400x400/?perfume'
-        }
-      ]
     }
   },
 
@@ -209,11 +173,36 @@ export default {
     }
   },
 
+  async mounted() {
+    try {
+      const response = await axios.get('http://127.0.0.1:8001/api/products')
+      this.products = response.data.map(p => ({
+        id: p.id,
+        name: p.title,
+        brand: p.brand,
+        category: p.category,
+        price: p.price,
+        image: p.image,
+        description: p.description
+      }))
+    } catch (error) {
+      console.error('Ошибка загрузки товаров:', error)
+    } finally {
+      this.loading = false
+    }
+  },
+
   methods: {
     addToCart(product) {
       let cart = JSON.parse(localStorage.getItem('cart') || '[]')
-      cart.push(product)
+      const exists = cart.find(item => item.id === product.id)
+      if (exists) {
+        exists.quantity = (exists.quantity || 1) + 1
+      } else {
+        cart.push({ ...product, quantity: 1 })
+      }
       localStorage.setItem('cart', JSON.stringify(cart))
+      alert('Добавлено в корзину!')
     }
   }
 }

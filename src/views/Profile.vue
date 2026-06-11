@@ -403,7 +403,7 @@
                 <div class="h-40 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center mb-3">
                   <img
                     v-if="p.image"
-                    :src="`http://127.0.0.1:8000/storage/${p.image}`"
+                    :src="`http://127.0.0.1:8001/storage/${p.image}`"
                     class="w-full h-full object-cover"
                   />
                   <span v-else class="text-gray-300 text-4xl">🛍️</span>

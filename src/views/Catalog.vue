@@ -39,7 +39,7 @@
             <div class="h-56 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
               <img
                 v-if="product.image"
-                :src="`http://127.0.0.1:8000/storage/${product.image}`"
+                :src="`http://127.0.0.1:8001/storage/${product.image}`"
                 class="w-full h-full object-cover"
                 :alt="product.name"
               />
@@ -113,7 +113,7 @@ export default {
 
   async mounted() {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/products')
+      const response = await axios.get('http://127.0.0.1:8001/api/products')
       this.products = response.data.map(product => ({
         id: product.id,
         name: product.title,
