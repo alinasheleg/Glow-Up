@@ -10,35 +10,52 @@
           v-for="category in categories"
           :key="category"
           @click="selectedCategory = category"
-          class="px-5 py-2 rounded-full border"
+          class="px-5 py-2 rounded-full border transition"
           :class="selectedCategory === category ? 'bg-pink-600 text-white' : 'bg-white'"
         >
           {{ category }}
         </button>
       </div>
 
+      <!-- Загрузка -->
+      <div v-if="loading" class="text-center py-20 text-gray-400">
+        <p class="text-xl">Загрузка товаров...</p>
+      </div>
+
+      <!-- Пусто -->
+      <div v-else-if="filteredProducts.length === 0" class="text-center py-20 text-gray-400">
+        <p class="text-xl">Товаров не найдено</p>
+      </div>
+
       <!-- Товары -->
-      <div class="grid md:grid-cols-4 gap-6">
+      <div v-else class="grid md:grid-cols-4 gap-6">
         <div
           v-for="product in filteredProducts"
           :key="product.id"
           class="bg-white rounded-2xl shadow p-4 hover:shadow-lg cursor-pointer"
         >
           <router-link :to="`/product/${product.id}`">
-            <div class="h-56 bg-gray-100 rounded-xl flex items-center justify-center text-5xl">
-              {{ product.title }}
+            <!-- Картинка -->
+            <div class="h-56 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
+              <img
+                v-if="product.image"
+                :src="`http://127.0.0.1:8000/storage/${product.image}`"
+                class="w-full h-full object-cover"
+                :alt="product.name"
+              />
+              <span v-else class="text-gray-300 text-5xl">🛍️</span>
             </div>
 
             <h2 class="font-bold text-lg mt-4">{{ product.name }}</h2>
-            <p class="text-gray-500">{{ product.brand }}</p>
+            <p class="text-gray-500 text-sm">{{ product.brand }}</p>
+            <p class="text-gray-400 text-xs">{{ product.category }}</p>
           </router-link>
 
           <div class="flex justify-between items-center mt-4">
             <span class="text-pink-600 font-bold text-xl">{{ product.price }} ₸</span>
-
             <button
               @click="addToCart(product)"
-              class="bg-pink-600 text-white px-4 py-2 rounded-lg"
+              class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
             >
               В корзину
             </button>
@@ -54,60 +71,63 @@
 import axios from 'axios'
 
 export default {
+  name: 'Catalog',
+
   data() {
     return {
       selectedCategory: 'Все',
       categories: [
         'Все',
-        'Уход',
-        'Косметика',
-        'Парфюм',
-        'Волосы',
-        'Для тела'
+        'Уход за кожей',
+        'Макияж',
+        'Парфюмерия',
+        'Уход за волосами',
+        'Для тела',
+        'Для мужчин'
       ],
-      products: []
+      products: [],
+      loading: true
     }
   },
 
   computed: {
     filteredProducts() {
       if (this.selectedCategory === 'Все') return this.products
-
-      return this.products.filter(p =>
-        p.category === this.selectedCategory
-      )
+      return this.products.filter(p => p.category === this.selectedCategory)
     }
   },
 
   methods: {
     addToCart(product) {
       let cart = JSON.parse(localStorage.getItem('cart')) || []
-      cart.push(product)
+      const exists = cart.find(item => item.id === product.id)
+      if (exists) {
+        exists.quantity = (exists.quantity || 1) + 1
+      } else {
+        cart.push({ ...product, quantity: 1 })
+      }
       localStorage.setItem('cart', JSON.stringify(cart))
-      alert('Добавлено в корзину')
+      alert('Добавлено в корзину!')
     }
   },
 
   async mounted() {
     try {
-      console.log('LOAD PRODUCTS...')
-
       const response = await axios.get('http://127.0.0.1:8000/api/products')
-
-      console.log('API RESPONSE:', response.data)
-
       this.products = response.data.map(product => ({
         id: product.id,
         name: product.title,
         brand: product.brand,
-        category: product.category ?? 'Все',
+        category: product.category || 'Все',
         price: product.price,
-        image: product.image
+        image: product.image,
+        description: product.description
       }))
     } catch (error) {
       console.error('Ошибка загрузки товаров:', error)
+    } finally {
+      this.loading = false
     }
   }
 }
-
 </script>
