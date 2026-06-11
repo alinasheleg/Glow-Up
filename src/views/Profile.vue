@@ -415,6 +415,7 @@
                 <p class="text-gray-500 text-sm mt-2">Цена: {{ p.price }} ₸</p>
                 <p class="text-pink-600 font-bold">Итог: {{ getFinalPrice(p.price) }} ₸</p>
                 <div class="flex gap-2 mt-3">
+                  <button @click="editPartnerProduct(p, i)" class="bg-blue-500 text-white flex-1 py-2 rounded-xl">Редактировать</button>
                   <button @click="deletePartnerProduct(p.id, i)" class="bg-red-500 text-white flex-1 py-2 rounded-xl">Удалить</button>
                 </div>
               </div>
@@ -753,6 +754,21 @@ export default {
       }
     },
 
+    editPartnerProduct(product, index) {
+  this.showPartnerForm = true
+  this.isEditMode = true
+  this.editIndex = index
+  this.partnerFormFile = null
+  this.partnerForm = {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    category: product.category,
+    description: product.description,
+    imagePreview: product.image ? `http://127.0.0.1:8001/storage/${product.image}` : null // ← вот это
+  }
+},
+
     async savePartnerProduct() {
       if (!this.partnerForm.name || !this.partnerForm.price || !this.partnerForm.category) {
         alert('Заполните название, цену и категорию')
@@ -762,44 +778,62 @@ export default {
       this.savingProduct = true
 
       try {
-        const partner = JSON.parse(localStorage.getItem('partner') || '{}')
+    const partner = JSON.parse(localStorage.getItem('partner') || '{}')
 
-        const formData = new FormData()
-        formData.append('title', this.partnerForm.name)
-        formData.append('brand', partner.name)
-        formData.append('category', this.partnerForm.category)
-        formData.append('price', this.partnerForm.price)
-        formData.append('description', this.partnerForm.description || '')
-        formData.append('partner_id', partner.id)
+    const formData = new FormData()
+    formData.append('title', this.partnerForm.name)
+    formData.append('brand', partner.name)
+    formData.append('category', this.partnerForm.category)
+    formData.append('price', this.partnerForm.price)
+    formData.append('description', this.partnerForm.description || '')
+    formData.append('partner_id', partner.id)
 
-        if (this.partnerFormFile) {
-          formData.append('image', this.partnerFormFile)
-        }
+    if (this.partnerFormFile) {
+        formData.append('image', this.partnerFormFile)
+    }
 
+    if (this.isEditMode) {
+        // РЕДАКТИРОВАНИЕ
+        formData.append('_method', 'PUT')
         const response = await axios.post(
-          'http://127.0.0.1:8001/api/partner/products',
-          formData,
-          { headers: { 'Content-Type': 'multipart/form-data' } }
+            `http://127.0.0.1:8001/api/partner/products/${this.partnerForm.id}`,
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
         )
-
+        const updated = response.data.product
+        this.partnerProducts[this.editIndex] = {
+            id: updated.id,
+            name: updated.title,
+            brand: updated.brand,
+            category: updated.category,
+            price: updated.price,
+            description: updated.description,
+            image: updated.image
+        }
+        this.partnerProducts = [...this.partnerProducts]
+    } else {
+        // СОЗДАНИЕ
+        const response = await axios.post(
+            'http://127.0.0.1:8001/api/partner/products',
+            formData,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        )
         const newProduct = response.data.product
         this.partnerProducts.push({
-          id: newProduct.id,
-          name: newProduct.title,
-          brand: newProduct.brand,
-          category: newProduct.category,
-          price: newProduct.price,
-          description: newProduct.description,
-          image: newProduct.image
+            id: newProduct.id,
+            name: newProduct.title,
+            brand: newProduct.brand,
+            category: newProduct.category,
+            price: newProduct.price,
+            description: newProduct.description,
+            image: newProduct.image
         })
+    }
 
-        this.showPartnerForm = false
-        this.partnerFormFile = null
-        this.partnerForm = {
-          name: '', brand: '', price: '', category: '', description: '', imagePreview: null
-        }
-
-        alert('Товар успешно добавлен и появится в каталоге!')
+    this.showPartnerForm = false
+    this.partnerFormFile = null
+    this.partnerForm = { name: '', brand: '', price: '', category: '', description: '', imagePreview: null }
+    alert(this.isEditMode ? 'Товар обновлён!' : 'Товар добавлен!')
 
       } catch (e) {
         console.log(e)
