@@ -135,15 +135,7 @@ export default {
       selectedCategory: 'Все',
       loading: true,
       products: [],
-      categories: [
-        'Все',
-        'Уход за кожей',
-        'Макияж',
-        'Парфюмерия',
-        'Уход за волосами',
-        'Для тела',
-        'Для мужчин'
-      ],
+      categories: ['Все'],
     }
   },
 
@@ -175,22 +167,26 @@ export default {
 
   async mounted() {
     try {
-      const response = await axios.get('http://127.0.0.1:8001/api/products')
-      this.products = response.data.map(p => ({
-        id: p.id,
-        name: p.title,
-        brand: p.brand,
-        category: p.category,
-        price: p.price,
-        image: p.image,
-        description: p.description
-      }))
+        const [productsRes, categoriesRes] = await Promise.all([
+            axios.get('http://127.0.0.1:8001/api/products'),
+            axios.get('http://127.0.0.1:8001/api/categories')
+        ])
+        this.products = productsRes.data.map(p => ({
+            id: p.id,
+            name: p.title,
+            brand: p.brand,
+            category: p.category,
+            price: p.price,
+            image: p.image,
+            description: p.description
+        }))
+        this.categories = ['Все', ...categoriesRes.data.map(c => c.name)]
     } catch (error) {
-      console.error('Ошибка загрузки товаров:', error)
+        console.error('Ошибка загрузки:', error)
     } finally {
-      this.loading = false
+        this.loading = false
     }
-  },
+},
 
   methods: {
     addToCart(product) {

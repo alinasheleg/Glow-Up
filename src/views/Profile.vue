@@ -336,12 +336,7 @@
                 <input v-model="partnerForm.price" type="number" placeholder="Цена партнёра" class="border px-4 py-3 rounded-xl bg-white" />
                 <select v-model="partnerForm.category" class="border px-4 py-3 rounded-xl bg-white">
                   <option disabled value="">Выберите категорию</option>
-                  <option>Уход за кожей</option>
-                  <option>Макияж</option>
-                  <option>Парфюмерия</option>
-                  <option>Уход за волосами</option>
-                  <option>Для тела</option>
-                  <option>Для мужчин</option>
+    <option v-for="cat in categoryOptions" :key="cat" :value="cat">{{ cat }}</option>
                 </select>
                 <div class="border px-4 py-3 rounded-xl bg-white flex items-center justify-between">
                   <input
@@ -509,6 +504,7 @@ export default {
       partnerOrders: [],
       partnerProducts: [],
       partnerFormFile: null,
+      categoryOptions: [],
       partnerForm: {
         name: '',
         brand: '',
@@ -553,6 +549,14 @@ export default {
 
       // Загружаем товары партнёра с API
       await this.loadPartnerProducts()
+
+      try {
+    const catRes = await axios.get('http://127.0.0.1:8001/api/categories')
+    this.categoryOptions = catRes.data.map(c => c.name)
+} catch (e) {
+    console.log('Ошибка загрузки категорий', e)
+}
+
       return
     }
 
@@ -830,10 +834,13 @@ export default {
         })
     }
 
-    this.showPartnerForm = false
-    this.partnerFormFile = null
-    this.partnerForm = { name: '', brand: '', price: '', category: '', description: '', imagePreview: null }
-    alert(this.isEditMode ? 'Товар обновлён!' : 'Товар добавлен!')
+    const message = this.isEditMode ? 'Товар обновлён!' : 'Товар добавлен!'
+this.showPartnerForm = false
+this.isEditMode = false
+this.editIndex = null
+this.partnerFormFile = null
+this.partnerForm = { name: '', brand: '', price: '', category: '', description: '', imagePreview: null }
+alert(message)
 
       } catch (e) {
         console.log(e)
