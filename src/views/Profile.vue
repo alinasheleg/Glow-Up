@@ -529,6 +529,12 @@ export default {
 
   async mounted() {
     const token = localStorage.getItem('token')
+
+    console.log('TOKEN IN PROFILE:', token)
+
+    if (token) {
+      api.defaults.headers.common.Authorization = `Bearer ${token}`
+    }
     const partnerAuth = localStorage.getItem('partnerAuth')
 
     // Если партнёр
@@ -597,8 +603,20 @@ export default {
     this.isPartner = false
 
     try {
-      const ordersResponse = await api.get('/orders')
-      this.orders = ordersResponse.data
+console.log('REQUEST ORDERS...')
+
+const token = localStorage.getItem('token')
+
+const ordersResponse = await api.get('/orders', {
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+})
+
+console.log('ORDERS RESPONSE:', ordersResponse.data)
+
+this.orders = ordersResponse.data
+console.log('ORDERS RESPONSE:', ordersResponse.data)
     } catch (e) { console.log(e) }
 
     try {

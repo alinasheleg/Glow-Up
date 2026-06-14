@@ -61,14 +61,17 @@ export default {
           }
         )
 
+        const token = response.data.token
         const partner = response.data.partner
 
+        localStorage.setItem('token', token)
+        localStorage.setItem('partner', JSON.stringify(partner))
+        localStorage.setItem('partnerAuth', 'true')
+
+        console.log('TOKEN SAVED:', token)
         console.log('RESPONSE', response.data)
         console.log('PARTNER', partner)
         console.log('STATUS', partner.status)
-
-        localStorage.setItem('partner', JSON.stringify(partner))
-        localStorage.setItem('partnerAuth', 'true')
 
         if (partner.status === 'pending') {
           localStorage.setItem('partnerPendingMessage', 'Ваша заявка находится на рассмотрении.')

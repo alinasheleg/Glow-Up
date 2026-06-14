@@ -199,49 +199,49 @@ export default {
       this.loading = true
       this.error = ''
 
-  try {
+    try {
 
-  const response = await api.post('/login', {
-    email: this.email,
-    password: this.password
-  })
-      
-const token = response.data.token
-const user = response.data.user
+      const response = await api.post('/login', {
+        email: this.email,
+        password: this.password
+      })
+        
+      const token = response.data.token
+      const user = response.data.user
 
-localStorage.setItem('token', token)
-localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('token', token)
+      localStorage.setItem('user', JSON.stringify(user))
 
-// ВАЖНО: синхронизация axios
-api.defaults.headers.common.Authorization = `Bearer ${token}`
+      // ВАЖНО: синхронизация axios
+      api.defaults.headers.common.Authorization = `Bearer ${token}`
 
-this.$router.push('/profile')
+      this.$router.push('/profile')
 
-    console.log(response)
+        console.log(response)
 
-  } catch (error) {
+      } catch (error) {
 
-  console.log(error)
+        console.log(error)
 
-  if (error.response) {
+        if (error.response) {
 
-    console.log('STATUS:')
-    console.log(error.response.status)
+          console.log('STATUS:')
+          console.log(error.response.status)
 
-    console.log('DATA:')
-    console.log(error.response.data)
+          console.log('DATA:')
+          console.log(error.response.data)
 
-    alert(JSON.stringify(error.response.data))
+          alert(JSON.stringify(error.response.data))
 
-  } else {
+        } else {
 
-    console.log(error.message)
+          console.log(error.message)
 
-  }
+        }
 
-}finally {
+        }finally {
 
-        this.loading = false
+          this.loading = false
 
       }
 
