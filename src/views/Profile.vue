@@ -542,9 +542,20 @@ export default {
       this.isLoggedIn = true
       this.isPartner = true
       this.tabs = [
-        { id: 'partner', name: 'Кабинет партнёра', icon: '🤝' },
+        { id: 'orders', name: 'Заказы', icon: '📦' },
+        { id: 'profile', name: 'Профиль', icon: '👤' },
+        { id: 'addresses', name: 'Адреса', icon: '📍' },
+        { id: 'bonuses', name: 'Бонусы', icon: '🎁' },
         { id: 'settings', name: 'Настройки', icon: '⚙️' }
       ]
+
+      if (this.isPartner) {
+        this.tabs.push({
+          id: 'partner',
+          name: 'Кабинет партнёра',
+          icon: '🤝'
+        })
+      }
       this.activeTab = 'partner'
 
       // Загружаем товары партнёра с API
