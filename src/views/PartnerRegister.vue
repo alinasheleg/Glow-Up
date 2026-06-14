@@ -88,6 +88,9 @@ export default {
     },
 
     async registerPartner() {
+      localStorage.removeItem('partner')
+      localStorage.removeItem('partnerAuth')
+      
       this.error = ''
 
       if (this.password !== this.confirmPassword) {
@@ -110,6 +113,10 @@ export default {
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
         )
+
+        localStorage.removeItem('partner')
+        localStorage.removeItem('partnerAuth')
+        localStorage.removeItem('partnerPendingMessage')
 
         alert(response.data.message)
         this.$router.push('/partner-login')
