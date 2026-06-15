@@ -64,7 +64,7 @@ export default {
         const token = response.data.token
         const partner = response.data.partner
 
-        localStorage.setItem('token', token)
+        localStorage.setItem('partnerToken', token)
         localStorage.setItem('partner', JSON.stringify(partner))
         localStorage.setItem('partnerAuth', 'true')
 
