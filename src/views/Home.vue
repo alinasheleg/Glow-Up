@@ -97,13 +97,29 @@
                 <p class="text-gray-400 text-xs">{{ product.category }}</p>
               </router-link>
               <div class="flex justify-between items-center mt-3">
-                <span class="text-pink-600 font-bold text-xl">{{ product.price }} ₸</span>
-                <button
-                  @click="addToCart(product)"
-                  class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
-                >
-                  В корзину
-                </button>
+                <span class="text-pink-600 font-bold text-xl">
+                  {{ product.price }} ₸
+                </span>
+
+                <div class="flex gap-2">
+
+                  <button
+                    @click.stop="toggleFavorite(product)"
+                    class="w-10 h-10 rounded-lg border flex items-center justify-center transition"
+                    :class="isFavorite(product.id)
+                      ? 'bg-red-500 text-white border-red-500'
+                      : 'bg-white text-gray-400 border-gray-300'"
+                  >
+                    ♥
+                  </button>
+
+                  <button
+                    @click.stop="addToCart(product)"
+                    class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
+                  >
+                    🛒
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -200,6 +216,24 @@ export default {
       localStorage.setItem('cart', JSON.stringify(cart))
       alert('Добавлено в корзину!')
     }
-  }
+  },
+  toggleFavorite(product) {
+    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+
+    const index = favorites.findIndex(item => item.id === product.id)
+
+    if (index !== -1) {
+      favorites.splice(index, 1)
+    } else {
+      favorites.push(product)
+    }
+
+    localStorage.setItem('favorites', JSON.stringify(favorites))
+  },
+
+  isFavorite(productId) {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+    return favorites.some(item => item.id === productId)
+  },
 }
 </script>

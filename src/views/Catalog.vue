@@ -52,13 +52,32 @@
           </router-link>
 
           <div class="flex justify-between items-center mt-4">
-            <span class="text-pink-600 font-bold text-xl">{{ product.price }} ₸</span>
-            <button
-              @click="addToCart(product)"
-              class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
-            >
-              В корзину
-            </button>
+            <span class="text-pink-600 font-bold text-xl">
+              {{ product.price }} ₸
+            </span>
+
+            <div class="flex gap-2">
+
+              <!-- FAVORITE -->
+              <button
+                @click.stop="toggleFavorite(product)"
+                class="w-10 h-10 rounded-lg border flex items-center justify-center transition"
+                :class="product.is_favorite
+                  ? 'bg-red-500 text-white border-red-500'
+                  : 'bg-white text-gray-400 border-gray-300'"
+              >
+                ♥
+              </button>
+
+              <!-- CART -->
+              <button
+                @click.stop="addToCart(product)"
+                class="bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition"
+              >
+                🛒
+              </button>
+
+            </div>
           </div>
         </div>
       </div>
@@ -90,40 +109,73 @@ export default {
   },
 
   methods: {
+
     addToCart(product) {
       let cart = JSON.parse(localStorage.getItem('cart')) || []
       const exists = cart.find(item => item.id === product.id)
+
       if (exists) {
         exists.quantity = (exists.quantity || 1) + 1
       } else {
         cart.push({ ...product, quantity: 1 })
       }
+
       localStorage.setItem('cart', JSON.stringify(cart))
       alert('Добавлено в корзину!')
+    },
+
+    async toggleFavorite(product) {
+      try {
+        const token = localStorage.getItem('token')
+
+        if (!token) {
+          alert('Войдите в аккаунт')
+          return
+        }
+
+        const res = await axios.post(
+          `http://127.0.0.1:8001/api/favorites/${product.id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
+
+        product.is_favorite = res.data.favorite
+
+      } catch (e) {
+        console.log(e)
+      }
     }
   },
 
   async mounted() {
     try {
-        const [productsRes, categoriesRes] = await Promise.all([
-            axios.get('http://127.0.0.1:8001/api/products'),
-            axios.get('http://127.0.0.1:8001/api/categories')
-        ])
-        this.products = productsRes.data.map(p => ({
-            id: p.id,
-            name: p.title,
-            brand: p.brand,
-            category: p.category,
-            price: p.price,
-            image: p.image,
-            description: p.description
-        }))
-        this.categories = ['Все', ...categoriesRes.data.map(c => c.name)]
+      const [productsRes, categoriesRes] = await Promise.all([
+        axios.get('http://127.0.0.1:8001/api/products'),
+        axios.get('http://127.0.0.1:8001/api/categories')
+      ])
+
+      this.products = productsRes.data.map(p => ({
+        id: p.id,
+        name: p.title,
+        brand: p.brand,
+        category: p.category,
+        price: p.price,
+        image: p.image,
+        description: p.description,
+        is_favorite: p.is_favorite ?? false
+      }))
+
+      this.categories = ['Все', ...categoriesRes.data.map(c => c.name)]
+
     } catch (error) {
-        console.error('Ошибка загрузки:', error)
+      console.error('Ошибка загрузки:', error)
     } finally {
-        this.loading = false
+      this.loading = false
     }
-}
+  }
 }
 </script>

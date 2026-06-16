@@ -94,13 +94,23 @@
             </div>
 
             <!-- Кнопка -->
-            <button
-              @click="addToCart"
-              class="w-full bg-pink-600 hover:bg-pink-700 text-white text-lg font-semibold py-4 rounded-2xl transition shadow-md shadow-pink-200"
-            >
-              🛒 В корзину
-            </button>
-
+            <div class="flex gap-3">
+              <button
+                @click="toggleFavorite"
+                class="w-16 rounded-2xl border text-2xl transition"
+                :class="product.is_favorite
+                  ? 'bg-red-500 text-white border-red-500'
+                  : 'bg-white text-gray-400 border-gray-300'"
+              >
+                ♥
+              </button>
+              <button
+                @click="addToCart"
+                class="flex-1 bg-pink-600 hover:bg-pink-700 text-white text-lg font-semibold py-4 rounded-2xl transition"
+              >
+                🛒 В корзину
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -118,15 +128,25 @@ export default {
   data() {
     return {
       product: null,
-      loading: true
+      loading: true,
     }
   },
 
   async mounted() {
     try {
       const id = this.$route.params.id
-      const response = await axios.get(`http://127.0.0.1:8001/api/products/${id}`)
+
+      const response = await axios.get(
+        `http://127.0.0.1:8001/api/products/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      )
+
       this.product = response.data
+
     } catch (error) {
       console.error('Ошибка загрузки товара:', error)
       this.product = null
@@ -146,7 +166,26 @@ export default {
       }
       localStorage.setItem('cart', JSON.stringify(cart))
       alert('Добавлено в корзину!')
-    }
-  }
+    },
+    async toggleFavorite() {
+      try {
+        await axios.post(
+          `http://127.0.0.1:8001/api/favorites/${this.product.id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+          }
+        )
+
+        // просто переключаем UI (без второго запроса)
+        this.product.is_favorite = !this.product.is_favorite
+
+      } catch (e) {
+        console.log(e)
+      }
+    },
+  },
 }
 </script>
