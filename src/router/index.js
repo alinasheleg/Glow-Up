@@ -35,6 +35,7 @@ import Banned from '@/views/Banned.vue'
 
 import PartnerPending from '@/views/PartnerPending.vue'
 
+import i18n from '../i18n'
 
 // ROUTES
 const routes = [
@@ -237,6 +238,34 @@ router.beforeEach((to, from, next) => {
   }
 
   next()
+
+  router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  const partnerAuth = localStorage.getItem('partnerAuth')
+
+  // 🔥 синхронизация языка
+  const savedLang = localStorage.getItem('lang')
+  if (savedLang) {
+    i18n.global.locale = savedLang
+  }
+
+  if (to.meta.requiresAuth && !token && !partnerAuth) {
+    next('/login')
+    return
+  }
+
+  if (token && !partnerAuth && (to.path === '/login' || to.path === '/register')) {
+    next('/profile')
+    return
+  }
+
+  if (partnerAuth && to.path === '/partner-login') {
+    next('/profile')
+    return
+  }
+
+  next()
+})
 })
 
 export default router 

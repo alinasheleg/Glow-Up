@@ -1,58 +1,57 @@
 <template>
   <footer class="bg-gray-900 text-white py-12">
     <div class="max-w-7xl mx-auto px-4">
+
       <div class="grid md:grid-cols-4 gap-8">
-        <!-- 1️⃣ О компании -->
+
+        <!-- 1 -->
         <div>
           <h3 class="font-bold text-lg mb-4 bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">
             Glow-Up
           </h3>
+
           <p class="text-gray-400 text-sm">
-            Премиальная косметика и парфюмерия с доставкой по всему Казахстану
+            {{ $t('footer.description') }}
           </p>
         </div>
 
-        <!-- 2️⃣ Покупателям -->
+        <!-- 2 -->
         <div>
-          <h4 class="font-semibold mb-4">Покупателям</h4>
+          <h4 class="font-semibold mb-4">{{ $t('footer.buyers') }}</h4>
+
           <ul class="space-y-2 text-sm text-gray-400">
             <li>
               <router-link to="/delivery" class="hover:text-white transition">
-                Доставка 
+                {{ $t('footer.delivery') }}
               </router-link>
-            </li>
-            <li>
-           
             </li>
           </ul>
         </div>
 
-         <!-- 3️⃣ Компаниям -->
+        <!-- 3 -->
         <div>
-          <h4 class="font-semibold mb-4">Компаниям</h4>
+          <h4 class="font-semibold mb-4">{{ $t('footer.company') }}</h4>
 
           <ul class="space-y-2 text-sm text-gray-400">
-
             <li>
               <router-link to="/about" class="hover:text-white transition block">
-                О нас
+                {{ $t('footer.about') }}
               </router-link>
             </li>
 
             <li>
               <router-link to="/becomePartner" class="hover:text-pink-400 transition block">
-                Стать партнёром
+                {{ $t('footer.partner') }}
               </router-link>
             </li>
-
           </ul>
         </div>
 
-        <!-- 4️⃣ Контакты -->
+        <!-- 4 -->
         <div>
-        
           <ul class="space-y-2 text-sm text-gray-400">
             <li>8 777 555-35-35</li>
+
             <li>
               <a href="mailto:info@glowup.kz" class="hover:text-white transition">
                 info@glowup.kz
@@ -60,12 +59,13 @@
             </li>
           </ul>
         </div>
+
       </div>
 
-      <!-- Нижняя линия -->
       <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-        © 2025 Glow-Up. Все права защищены.
+        {{ $t('footer.rights') }}
       </div>
+
     </div>
   </footer>
 </template>

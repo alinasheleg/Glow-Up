@@ -3,6 +3,7 @@
 
     <Banner />
 
+    <!-- SEARCH -->
     <section class="max-w-7xl mx-auto px-4 py-8">
       <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
 
@@ -10,24 +11,31 @@
           <input
             v-model="search"
             type="text"
-            placeholder="Поиск товаров..."
+            :placeholder="$t('home.searchPlaceholder')"
             class="w-full px-5 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
           />
         </div>
 
         <select v-model="sort" class="px-4 py-3 rounded-2xl border border-gray-300">
-          <option value="default">Сортировка</option>
-          <option value="cheap">Сначала дешевые</option>
-          <option value="expensive">Сначала дорогие</option>
+          <option value="default">{{ $t('home.sort.default') }}</option>
+          <option value="cheap">{{ $t('home.sort.cheap') }}</option>
+          <option value="expensive">{{ $t('home.sort.expensive') }}</option>
         </select>
+
       </div>
     </section>
 
+    <!-- CONTENT -->
     <section class="max-w-7xl mx-auto px-4 pb-12">
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
+        <!-- SIDEBAR -->
         <aside class="bg-white rounded-2xl shadow-md p-6 h-fit">
-          <h2 class="text-2xl font-bold mb-6">Категории</h2>
+
+          <h2 class="text-2xl font-bold mb-6">
+            {{ $t('home.categories') }}
+          </h2>
+
           <div class="space-y-3">
             <button
               v-for="cat in categories"
@@ -39,51 +47,66 @@
               {{ cat }}
             </button>
           </div>
+
         </aside>
 
+        <!-- PRODUCTS -->
         <div class="lg:col-span-3">
 
+          <!-- FILTERS -->
           <div class="flex gap-3 mb-8 flex-wrap">
+
             <button
               class="px-5 py-2 rounded-xl"
               :class="filter==='all' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
               @click="filter='all'"
             >
-              Все
+              {{ $t('home.filters.all') }}
             </button>
+
             <button
               class="px-5 py-2 rounded-xl"
               :class="filter==='popular' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
               @click="filter='popular'"
             >
-              Популярные
+              {{ $t('home.filters.popular') }}
             </button>
+
             <button
               class="px-5 py-2 rounded-xl"
               :class="filter==='new' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
               @click="filter='new'"
             >
-              Новинки
+              {{ $t('home.filters.new') }}
             </button>
+
           </div>
 
-          <h3 class="text-2xl font-bold mb-6">Рекомендованные товары</h3>
+          <h3 class="text-2xl font-bold mb-6">
+            {{ $t('home.recommended') }}
+          </h3>
 
+          <!-- LOADING -->
           <div v-if="loading" class="text-center py-20 text-gray-400">
-            <p class="text-xl">Загрузка товаров...</p>
+            <p class="text-xl">{{ $t('home.loading') }}</p>
           </div>
 
+          <!-- EMPTY -->
           <div v-else-if="filteredProducts.length === 0" class="text-center py-20 text-gray-400">
-            <p class="text-xl">Товаров не найдено</p>
+            <p class="text-xl">{{ $t('home.empty') }}</p>
           </div>
 
+          <!-- PRODUCTS -->
           <div v-else class="grid md:grid-cols-3 gap-6">
+
             <div
               v-for="product in filteredProducts"
               :key="product.id"
               class="bg-white rounded-2xl shadow p-4 hover:shadow-lg"
             >
+
               <router-link :to="`/product/${product.id}`">
+
                 <div class="h-48 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
                   <img
                     v-if="product.image"
@@ -92,13 +115,17 @@
                   />
                   <span v-else class="text-gray-300 text-5xl">🛍️</span>
                 </div>
+
                 <h2 class="font-bold text-lg mt-3">{{ product.name }}</h2>
                 <p class="text-gray-400 text-sm">{{ product.brand }}</p>
                 <p class="text-gray-400 text-xs">{{ product.category }}</p>
+
               </router-link>
+
               <div class="flex justify-between items-center mt-3">
+
                 <span class="text-pink-600 font-bold text-xl">
-                  {{ product.price }} ₸
+                  {{ product.price }} {{ $t('product.currency') }}
                 </span>
 
                 <div class="flex gap-2">
@@ -119,9 +146,12 @@
                   >
                     🛒
                   </button>
+
                 </div>
+
               </div>
             </div>
+
           </div>
 
         </div>
@@ -129,6 +159,7 @@
     </section>
 
     <PromoSection />
+
   </div>
 </template>
 
@@ -208,32 +239,36 @@ export default {
     addToCart(product) {
       let cart = JSON.parse(localStorage.getItem('cart') || '[]')
       const exists = cart.find(item => item.id === product.id)
+
       if (exists) {
         exists.quantity = (exists.quantity || 1) + 1
       } else {
         cart.push({ ...product, quantity: 1 })
       }
+
       localStorage.setItem('cart', JSON.stringify(cart))
-      alert('Добавлено в корзину!')
+
+      alert(this.$t('home.addedToCart'))
+    },
+
+    toggleFavorite(product) {
+      let favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+
+      const index = favorites.findIndex(item => item.id === product.id)
+
+      if (index !== -1) {
+        favorites.splice(index, 1)
+      } else {
+        favorites.push(product)
+      }
+
+      localStorage.setItem('favorites', JSON.stringify(favorites))
+    },
+
+    isFavorite(productId) {
+      const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+      return favorites.some(item => item.id === productId)
     }
-  },
-  toggleFavorite(product) {
-    let favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
-
-    const index = favorites.findIndex(item => item.id === product.id)
-
-    if (index !== -1) {
-      favorites.splice(index, 1)
-    } else {
-      favorites.push(product)
-    }
-
-    localStorage.setItem('favorites', JSON.stringify(favorites))
-  },
-
-  isFavorite(productId) {
-    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
-    return favorites.some(item => item.id === productId)
-  },
+  }
 }
 </script>

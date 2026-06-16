@@ -11,8 +11,8 @@
           <div class="flex items-center gap-2">
             <span>📞</span>
             <a href="tel:+77775553535" class="hover:text-pink-400 transition cursor-pointer">
-  8 777 555-35-35
-</a>
+              8 777 555-35-35
+            </a>
           </div>
         </div>
         <div class="hidden md:flex gap-4">
@@ -20,6 +20,9 @@
           <router-link to="/payment" class="hover:text-pink-400 transition">Оплата</router-link>
           <router-link to="/about" class="hover:text-pink-400 transition">О нас</router-link>
           <router-link to="/becomePartner" class="partner-btn">Стать партнёром</router-link>
+          <button @click="$i18n.locale='ru'">RU</button>
+          <button @click="$i18n.locale='kz'">KZ</button>  
+          <button @click="$i18n.locale='en'">EN</button>
         </div>
       </div>
     </div>
@@ -102,8 +105,25 @@ export default {
     cartCount: { type: Number, default: 0 },
     favoritesCount: { type: Number, default: 0 }
   },
+
   data() {
-    return { isMenuOpen: false }
+    return {
+      isMenuOpen: false
+    }
+  },
+
+  methods: {
+    changeLang(lang) {
+      this.$i18n.locale = lang
+      localStorage.setItem('lang', lang)
+    }
+  },
+
+  mounted() {
+    const savedLang = localStorage.getItem('lang')
+    if (savedLang) {
+      this.$i18n.locale = savedLang
+    }
   }
 }
 </script>

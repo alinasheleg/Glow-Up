@@ -2,7 +2,9 @@
   <div class="min-h-screen bg-pink-50 px-6 py-10">
     <div class="max-w-7xl mx-auto">
 
-      <h1 class="text-4xl font-bold mb-8">Каталог товаров</h1>
+      <h1 class="text-4xl font-bold mb-8">
+  {{ $t('catalog.title') }}
+</h1>
 
       <!-- Категории -->
       <div class="flex gap-3 flex-wrap mb-8">
@@ -19,12 +21,12 @@
 
       <!-- Загрузка -->
       <div v-if="loading" class="text-center py-20 text-gray-400">
-        <p class="text-xl">Загрузка товаров...</p>
+        <p class="text-xl">{{ $t('catalog.loading') }}</p>
       </div>
 
       <!-- Пусто -->
       <div v-else-if="filteredProducts.length === 0" class="text-center py-20 text-gray-400">
-        <p class="text-xl">Товаров не найдено</p>
+        <p class="text-xl">{{ $t('catalog.empty') }}</p>
       </div>
 
       <!-- Товары -->
@@ -121,7 +123,7 @@ export default {
       }
 
       localStorage.setItem('cart', JSON.stringify(cart))
-      alert('Добавлено в корзину!')
+      alert(this.$t('catalog.addedToCart'))
     },
 
     async toggleFavorite(product) {
@@ -129,7 +131,7 @@ export default {
         const token = localStorage.getItem('token')
 
         if (!token) {
-          alert('Войдите в аккаунт')
+          alert(this.$t('catalog.loginRequired'))
           return
         }
 

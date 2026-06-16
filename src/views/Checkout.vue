@@ -5,45 +5,54 @@
     <section class="max-w-7xl mx-auto px-4 py-12">
       <!-- Breadcrumbs -->
       <div class="mb-6 flex items-center gap-2 text-sm">
-        <router-link to="/cart" class="text-gray-600 hover:text-pink-600">Корзина</router-link>
+        <router-link to="/cart" class="text-gray-600 hover:text-pink-600">
+          {{ $t('checkout.cart') }}
+        </router-link>
         <span class="text-gray-400">→</span>
-        <span class="text-pink-600 font-medium">Оформление заказа</span>
+        <span class="text-pink-600 font-medium">
+          {{ $t('checkout.title') }}
+        </span>
       </div>
 
       <!-- Заголовок -->
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">🛍️ Оформление заказа</h1>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+        🛍️ {{ $t('checkout.title') }}
+      </h1>
 
       <div class="grid lg:grid-cols-3 gap-8">
         <!-- Левая колонка - Форма -->
         <div class="lg:col-span-2 space-y-6">
+
           <!-- Контактные данные -->
           <div class="bg-white rounded-xl p-6 shadow-md">
             <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-              <span>👤</span> Контактные данные
+              <span>👤</span> {{ $t('checkout.contact') }}
             </h2>
+
             <div class="space-y-4">
               <div class="grid md:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Имя *
+                    {{ $t('checkout.firstName') }} *
                   </label>
                   <input 
                     v-model="orderForm.firstName"
-                    type="text" 
+                    type="text"
                     required
-                    placeholder="Ваше имя"
+                    :placeholder="$t('checkout.firstNamePlaceholder')"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                   />
                 </div>
+
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Фамилия *
+                    {{ $t('checkout.lastName') }} *
                   </label>
                   <input 
                     v-model="orderForm.lastName"
-                    type="text" 
+                    type="text"
                     required
-                    placeholder="Ваша фамилия"
+                    :placeholder="$t('checkout.lastNamePlaceholder')"
                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                   />
                 </div>
@@ -51,29 +60,31 @@
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Телефон *
+                  {{ $t('checkout.phone') }} *
                 </label>
                 <input 
                   v-model="orderForm.phone"
-                  type="tel" 
+                  type="tel"
                   required
-                  placeholder="+7 (___) ___-__-__"
+                  :placeholder="$t('checkout.phonePlaceholder')"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                 />
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Email *
+                  {{ $t('checkout.email') }} *
                 </label>
                 <input 
                   v-model="orderForm.email"
-                  type="email" 
+                  type="email"
                   required
                   placeholder="example@email.com"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                 />
-                <p class="text-xs text-gray-500 mt-1">На этот email придет подтверждение заказа</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  {{ $t('checkout.emailHint') }}
+                </p>
               </div>
             </div>
           </div>
@@ -81,8 +92,9 @@
           <!-- Способ доставки -->
           <div class="bg-white rounded-xl p-6 shadow-md">
             <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-              <span>🚚</span> Способ доставки
+              <span>🚚</span> {{ $t('checkout.delivery') }}
             </h2>
+
             <div class="space-y-3">
               <label 
                 v-for="delivery in deliveryMethods" 
@@ -92,7 +104,7 @@
               >
                 <input 
                   v-model="orderForm.delivery"
-                  type="radio" 
+                  type="radio"
                   :value="delivery.id"
                   class="mt-1"
                 />
@@ -102,7 +114,9 @@
                     <span class="text-pink-600 font-bold">{{ delivery.price }} ₸</span>
                   </div>
                   <p class="text-sm text-gray-600">{{ delivery.description }}</p>
-                  <p class="text-xs text-gray-500 mt-1">Срок: {{ delivery.time }}</p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    {{ $t('checkout.term') }}: {{ delivery.time }}
+                  </p>
                 </div>
               </label>
             </div>
@@ -111,108 +125,48 @@
           <!-- Адрес доставки -->
           <div v-if="orderForm.delivery !== 'pickup'" class="bg-white rounded-xl p-6 shadow-md">
             <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-              <span>📍</span> Адрес доставки
+              <span>📍</span> {{ $t('checkout.address') }}
             </h2>
+
             <div class="space-y-4">
-              <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Город *
-                  </label>
-                  <select 
-                    v-model="orderForm.city"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
-                  >
-                    <option value="">Выберите город</option>
-                    <option value="astana">Астана</option>
-                    <option value="almaty">Алматы</option>
-                    <option value="shymkent">Шымкент</option>
-                    <option value="karaganda">Караганда</option>
-                    <option value="aktobe">Актобе</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Индекс
-                  </label>
-                  <input 
-                    v-model="orderForm.zip"
-                    type="text" 
-                    placeholder="010000"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
-                  />
-                </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  {{ $t('checkout.city') }} *
+                </label>
+                <select 
+                  v-model="orderForm.city"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
+                >
+                  <option value="">{{ $t('checkout.selectCity') }}</option>
+                  <option value="astana">Астана</option>
+                  <option value="almaty">Алматы</option>
+                  <option value="shymkent">Шымкент</option>
+                  <option value="karaganda">Караганда</option>
+                  <option value="aktobe">Актобе</option>
+                </select>
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Улица *
+                  {{ $t('checkout.street') }} *
                 </label>
                 <input 
                   v-model="orderForm.street"
-                  type="text" 
+                  type="text"
                   required
-                  placeholder="Название улицы"
+                  :placeholder="$t('checkout.streetPlaceholder')"
                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
                 />
-              </div>
-
-              <div class="grid grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Дом *
-                  </label>
-                  <input 
-                    v-model="orderForm.house"
-                    type="text" 
-                    required
-                    placeholder="№"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Квартира
-                  </label>
-                  <input 
-                    v-model="orderForm.apartment"
-                    type="text" 
-                    placeholder="№"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
-                  />
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Подъезд
-                  </label>
-                  <input 
-                    v-model="orderForm.entrance"
-                    type="text" 
-                    placeholder="№"
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Комментарий к заказу
-                </label>
-                <textarea 
-                  v-model="orderForm.comment"
-                  rows="3"
-                  placeholder="Укажите удобное время доставки, код домофона и другие детали"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none resize-none"
-                ></textarea>
               </div>
             </div>
           </div>
 
-          <!-- Способ оплаты -->
+          <!-- Оплата -->
           <div class="bg-white rounded-xl p-6 shadow-md">
             <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-              <span>💳</span> Способ оплаты
+              <span>💳</span> {{ $t('checkout.payment') }}
             </h2>
+
             <div class="space-y-3">
               <label 
                 v-for="payment in paymentMethods" 
@@ -222,7 +176,7 @@
               >
                 <input 
                   v-model="orderForm.payment"
-                  type="radio" 
+                  type="radio"
                   :value="payment.id"
                   class="mt-1"
                 />
@@ -240,93 +194,44 @@
           <!-- Промокод -->
           <div class="bg-white rounded-xl p-6 shadow-md">
             <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-              <span>🎟️</span> Промокод
+              <span>🎟️</span> {{ $t('checkout.promo') }}
             </h2>
+
             <div class="flex gap-3">
               <input 
                 v-model="promoCode"
-                type="text" 
-                placeholder="Введите промокод"
+                type="text"
+                :placeholder="$t('checkout.promoPlaceholder')"
                 class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none"
               />
               <button 
                 @click="applyPromoCode"
                 class="px-6 py-3 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition font-medium"
               >
-                Применить
+                {{ $t('checkout.apply') }}
               </button>
             </div>
-            <p v-if="promoApplied" class="text-green-600 text-sm mt-2">✓ Промокод применен! Скидка 10%</p>
+
+            <p v-if="promoApplied" class="text-green-600 text-sm mt-2">
+              ✓ {{ $t('checkout.promoApplied') }}
+            </p>
           </div>
+
         </div>
 
-        <!-- Правая колонка - Итого -->
+        <!-- Правая колонка -->
         <div class="lg:col-span-1">
           <div class="bg-white rounded-xl p-6 shadow-md sticky top-24">
-            <h2 class="text-xl font-bold mb-4">Ваш заказ</h2>
-            
-            <!-- Товары -->
-            <div class="space-y-3 mb-4 max-h-60 overflow-y-auto">
-              <div v-for="item in cartItems" :key="item.id" class="flex gap-3 pb-3 border-b">
-                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <span class="text-2xl">{{ item.icon }}</span>
-                </div>
-                <div class="flex-1">
-                  <h3 class="font-medium text-sm">{{ item.name }}</h3>
-                  <p class="text-xs text-gray-500">{{ item.brand }}</p>
-                  <div class="flex justify-between items-center mt-1">
-                    <span class="text-xs text-gray-600">{{ item.quantity }} шт</span>
-                    <span class="font-bold text-sm">{{ item.price }} ₸</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <h2 class="text-xl font-bold mb-4">
+              {{ $t('checkout.summary') }}
+            </h2>
 
-            <!-- Расчет -->
-            <div class="space-y-2 py-4 border-t">
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Товары ({{ totalItems }} шт):</span>
-                <span class="font-semibold">{{ subtotal }} ₸</span>
-              </div>
-              <div class="flex justify-between text-sm">
-                <span class="text-gray-600">Доставка:</span>
-                <span class="font-semibold">{{ deliveryCost }} ₸</span>
-              </div>
-              <div v-if="promoApplied" class="flex justify-between text-sm text-green-600">
-                <span>Скидка:</span>
-                <span class="font-semibold">-{{ discount }} ₸</span>
-              </div>
-            </div>
-
-            <!-- Итого -->
-            <div class="border-t pt-4 mb-6">
-              <div class="flex justify-between items-center">
-                <span class="text-lg font-bold">Итого:</span>
-                <span class="text-2xl font-bold text-pink-600">{{ total }} ₸</span>
-              </div>
-            </div>
-
-            <!-- Кнопка оформления -->
             <button 
               @click="submitOrder"
               class="w-full bg-pink-600 text-white py-4 rounded-lg hover:bg-pink-700 transition font-bold text-lg mb-4"
             >
-              Оформить заказ
+              {{ $t('checkout.submit') }}
             </button>
-
-            <div class="text-xs text-gray-500 text-center">
-              Нажимая кнопку, вы соглашаетесь с 
-              <a href="#" class="text-pink-600 hover:underline">условиями использования</a>
-            </div>
-
-            <!-- Безопасность -->
-            <div class="mt-6 p-4 bg-green-50 rounded-lg">
-              <div class="flex items-center gap-2 text-sm text-green-700">
-                <span class="text-xl">🔒</span>
-                <span class="font-medium">Безопасная оплата</span>
-              </div>
-              <p class="text-xs text-gray-600 mt-1">Ваши данные защищены SSL-шифрованием</p>
-            </div>
           </div>
         </div>
       </div>
