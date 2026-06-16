@@ -160,6 +160,9 @@
 
     <PromoSection />
 
+    <!-- AI CHAT BUTTON (ВАЖНО: В КОНЦЕ, НО ВНУТРИ TEMPLATE) -->
+    <AIChat />
+
   </div>
 </template>
 
@@ -167,13 +170,16 @@
 import axios from 'axios'
 import Banner from '../components/Banner.vue'
 import PromoSection from '../components/PromoSection.vue'
+import AIChat from '../views/AiAssistant.vue'
 
 export default {
   name: 'Home',
   components: {
     Banner,
     PromoSection,
+    AIChat
   },
+
   data() {
     return {
       search: '',
@@ -214,26 +220,28 @@ export default {
 
   async mounted() {
     try {
-        const [productsRes, categoriesRes] = await Promise.all([
-            axios.get('http://127.0.0.1:8001/api/products'),
-            axios.get('http://127.0.0.1:8001/api/categories')
-        ])
-        this.products = productsRes.data.map(p => ({
-            id: p.id,
-            name: p.title,
-            brand: p.brand,
-            category: p.category,
-            price: p.price,
-            image: p.image,
-            description: p.description
-        }))
-        this.categories = ['Все', ...categoriesRes.data.map(c => c.name)]
+      const [productsRes, categoriesRes] = await Promise.all([
+        axios.get('http://127.0.0.1:8001/api/products'),
+        axios.get('http://127.0.0.1:8001/api/categories')
+      ])
+
+      this.products = productsRes.data.map(p => ({
+        id: p.id,
+        name: p.title,
+        brand: p.brand,
+        category: p.category,
+        price: p.price,
+        image: p.image,
+        description: p.description
+      }))
+
+      this.categories = ['Все', ...categoriesRes.data.map(c => c.name)]
     } catch (error) {
-        console.error('Ошибка загрузки:', error)
+      console.error('Ошибка загрузки:', error)
     } finally {
-        this.loading = false
+      this.loading = false
     }
-},
+  },
 
   methods: {
     addToCart(product) {
@@ -247,7 +255,6 @@ export default {
       }
 
       localStorage.setItem('cart', JSON.stringify(cart))
-
       alert(this.$t('home.addedToCart'))
     },
 

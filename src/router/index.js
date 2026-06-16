@@ -10,6 +10,7 @@ import Payment from '../views/Payment.vue'
 import About from '../views/About.vue'
 import Favorites from '@/views/Favorites.vue'
 import Cart from '../views/Cart.vue'
+import AiAssistant from '../views/AiAssistant.vue'
 
 import CategoryBodycare from '../views/CategoryBodycare.vue'
 import CategoryHaircare from '../views/CategoryHaircare.vue'
@@ -45,7 +46,11 @@ const routes = [
     name: 'Home',
     component: Home
   },
-
+{
+  path: '/ai',
+  name: 'ai',
+  component: AiAssistant
+},
   {
     path: '/catalog',
     name: 'Catalog',

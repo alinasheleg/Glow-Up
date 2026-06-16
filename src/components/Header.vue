@@ -13,7 +13,9 @@
             <a href="tel:+77775553535" class="hover:text-pink-400 transition cursor-pointer">
               8 777 555-35-35
             </a>
+            
           </div>
+          
         </div>
         <div class="hidden md:flex gap-4">
           <router-link to="/delivery" class="hover:text-pink-400 transition">Доставка</router-link>
