@@ -3,20 +3,39 @@
 
     <Banner />
 
-    <!-- SEARCH -->
+    <!-- FILTERS -->
     <section class="max-w-7xl mx-auto px-4 py-8">
-      <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+      <div class="flex items-center justify-between gap-3 mb-8 flex-wrap">
 
-        <div class="flex-1 w-full">
-          <input
-            v-model="search"
-            type="text"
-            :placeholder="$t('home.searchPlaceholder')"
-            class="w-full px-5 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
-          />
+        <div class="flex gap-3 flex-wrap items-center">
+
+          <button
+            class="px-5 py-2 rounded-xl"
+            :class="filter==='all' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
+            @click="filter='all'"
+          >
+            {{ $t('home.filters.all') }}
+          </button>
+
+          <button
+            class="px-5 py-2 rounded-xl"
+            :class="filter==='popular' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
+            @click="filter='popular'"
+          >
+            {{ $t('home.filters.popular') }}
+          </button>
+
+          <button
+            class="px-5 py-2 rounded-xl"
+            :class="filter==='new' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
+            @click="filter='new'"
+          >
+            {{ $t('home.filters.new') }}
+          </button>
+
         </div>
 
-        <select v-model="sort" class="px-4 py-3 rounded-2xl border border-gray-300">
+        <select v-model="sort" class="px-4 py-2 rounded-xl border border-gray-300">
           <option value="default">{{ $t('home.sort.default') }}</option>
           <option value="cheap">{{ $t('home.sort.cheap') }}</option>
           <option value="expensive">{{ $t('home.sort.expensive') }}</option>
@@ -52,35 +71,6 @@
 
         <!-- PRODUCTS -->
         <div class="lg:col-span-3">
-
-          <!-- FILTERS -->
-          <div class="flex gap-3 mb-8 flex-wrap">
-
-            <button
-              class="px-5 py-2 rounded-xl"
-              :class="filter==='all' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
-              @click="filter='all'"
-            >
-              {{ $t('home.filters.all') }}
-            </button>
-
-            <button
-              class="px-5 py-2 rounded-xl"
-              :class="filter==='popular' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
-              @click="filter='popular'"
-            >
-              {{ $t('home.filters.popular') }}
-            </button>
-
-            <button
-              class="px-5 py-2 rounded-xl"
-              :class="filter==='new' ? 'bg-pink-500 text-white' : 'bg-white shadow'"
-              @click="filter='new'"
-            >
-              {{ $t('home.filters.new') }}
-            </button>
-
-          </div>
 
           <h3 class="text-2xl font-bold mb-6">
             {{ $t('home.recommended') }}
@@ -159,8 +149,6 @@
     </section>
 
     <PromoSection />
-
-    <!-- AI CHAT BUTTON (ВАЖНО: В КОНЦЕ, НО ВНУТРИ TEMPLATE) -->
     <AIChat />
 
   </div>
@@ -182,7 +170,6 @@ export default {
 
   data() {
     return {
-      search: '',
       sort: 'default',
       filter: 'all',
       selectedCategory: 'Все',
@@ -200,10 +187,12 @@ export default {
         items = items.filter(p => p.category === this.selectedCategory)
       }
 
-      if (this.search) {
-        items = items.filter(p =>
-          p.name.toLowerCase().includes(this.search.toLowerCase())
-        )
+      if (this.filter === 'popular') {
+        items = items.filter(p => p.popular || p.is_popular)
+      }
+
+      if (this.filter === 'new') {
+        items = items.filter(p => p.is_new || p.new)
       }
 
       if (this.sort === 'cheap') {

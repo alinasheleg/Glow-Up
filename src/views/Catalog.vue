@@ -3,8 +3,18 @@
     <div class="max-w-7xl mx-auto">
 
       <h1 class="text-4xl font-bold mb-8">
-  {{ $t('catalog.title') }}
-</h1>
+        {{ $t('catalog.title') }}
+      </h1>
+
+      <!-- ПОИСК -->
+      <div class="mb-6">
+        <input
+          v-model="search"
+          type="text"
+          :placeholder="$t('home.searchPlaceholder')"
+          class="w-full px-5 py-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-400"
+        />
+      </div>
 
       <!-- Категории -->
       <div class="flex gap-3 flex-wrap mb-8">
@@ -96,6 +106,7 @@ export default {
 
   data() {
     return {
+      search: '',
       selectedCategory: 'Все',
       categories: ['Все'],
       products: [],
@@ -105,8 +116,19 @@ export default {
 
   computed: {
     filteredProducts() {
-      if (this.selectedCategory === 'Все') return this.products
-      return this.products.filter(p => p.category === this.selectedCategory)
+      let items = this.products
+
+      if (this.selectedCategory !== 'Все') {
+        items = items.filter(p => p.category === this.selectedCategory)
+      }
+
+      if (this.search) {
+        items = items.filter(p =>
+          p.name.toLowerCase().includes(this.search.toLowerCase())
+        )
+      }
+
+      return items
     }
   },
 

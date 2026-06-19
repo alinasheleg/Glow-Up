@@ -218,7 +218,7 @@ export default {
       isEditMode: false,
       editIndex: null,
 
-      markup: 10,
+      markup: 60,
 
       orders: JSON.parse(localStorage.getItem("orders") || "[]"),
       products: JSON.parse(localStorage.getItem("products") || "[]"),
