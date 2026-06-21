@@ -495,7 +495,7 @@ export default {
       },
 
       // --- ПАРТНЁР ---
-      markup: 10,
+      markup: 60,
       showPartnerOrders: false,
       showPartnerForm: false,
       isEditMode: false,
