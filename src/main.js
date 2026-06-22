@@ -13,8 +13,8 @@ import kz from './i18n/locales/kz.js'
 
 // 👉 настройка i18n
 const i18n = createI18n({
-  legacy: false,
-  locale: 'ru',        // язык по умолчанию
+  legacy: true,       
+  locale: 'ru',       
   fallbackLocale: 'ru',
   messages: {
     ru,

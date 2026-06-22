@@ -242,6 +242,7 @@
 </template>
 
 <script>
+import api from '@/api/axios'
 export default {
   name: 'Checkout',
 
@@ -333,22 +334,25 @@ export default {
         alert('Неверный промокод')
       }
     },
+async submitOrder() {
+  const token = localStorage.getItem('token')
 
-    submitOrder() {
-      if (!this.orderForm.firstName || !this.orderForm.phone || !this.orderForm.email) {
-        alert('Заполните обязательные поля')
-        return
-      }
+  const res = await fetch('http://127.0.0.1:8001/api/orders', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      items: this.cartItems,
+      total: this.total
+    })
+  })
 
-      alert(`Заказ оформлен!
-Сумма: ${this.total} ₸
-Способ доставки: ${this.orderForm.delivery}
-Способ оплаты: ${this.orderForm.payment}`)
-
-      localStorage.removeItem('cart')
-
-      this.$router.push('/profile')
-    }
-  }
+  const text = await res.text()
+  console.log('RAW RESPONSE:', text)
 }
+}
+}
+
 </script>

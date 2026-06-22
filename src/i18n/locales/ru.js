@@ -28,16 +28,14 @@ export default {
     partner: 'Стать партнёром',
     rights: '© 2025 Glow-Up. Все права защищены.'
   },
-    product: {
-    price: 'Цена'
+  product: {
+    price: 'Цена',
+    currency: '₸'
   },
     products: {
     bestSellers: 'Хиты продаж',
     all: 'Все товары',
     addToCart: 'В корзину'
-  },
-  product: {
-    currency: '₸'
   },
     promo: {
     blackFriday: {
@@ -88,15 +86,39 @@ export default {
   checkout: {
     cart: "Корзина",
     title: "Оформление заказа",
+
     contact: "Контактные данные",
+
     firstName: "Имя",
     lastName: "Фамилия",
     phone: "Телефон",
     email: "Email",
+
+    firstNamePlaceholder: "Введите имя",
+    lastNamePlaceholder: "Введите фамилию",
+    phonePlaceholder: "+7 (700) 123-45-67",
+    emailHint: "Мы отправим подтверждение заказа на этот адрес",
+
     delivery: "Способ доставки",
+    term: "Срок",
+
+    address: "Адрес доставки",
+    city: "Город",
+    selectCity: "Выберите город",
+    street: "Улица",
+    streetPlaceholder: "Введите улицу",
+
     payment: "Способ оплаты",
+
+    promo: "Промокод",
+    promoPlaceholder: "Введите промокод",
+    apply: "Применить",
+    promoApplied: "Промокод успешно применён",
+
+    summary: "Ваш заказ",
     yourOrder: "Ваш заказ",
     total: "Итого",
+
     submit: "Оформить заказ"
   },
   catalog: {

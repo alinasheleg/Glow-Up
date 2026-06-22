@@ -85,19 +85,43 @@ export default {
   continueShopping: 'Сатып алуды жалғастыру',
   remove: 'Жою'
  },
-   checkout: {
+  checkout: {
     cart: "Себет",
     title: "Тапсырысты рәсімдеу",
+
     contact: "Байланыс деректері",
+
     firstName: "Аты",
     lastName: "Тегі",
     phone: "Телефон",
     email: "Email",
+
+    firstNamePlaceholder: "Атыңызды енгізіңіз",
+    lastNamePlaceholder: "Тегіңізді енгізіңіз",
+    phonePlaceholder: "+7 (700) 123-45-67",
+    emailHint: "Тапсырысты растауды осы электрондық поштаға жібереміз",
+
     delivery: "Жеткізу тәсілі",
+    term: "Мерзімі",
+
+    address: "Жеткізу мекенжайы",
+    city: "Қала",
+    selectCity: "Қаланы таңдаңыз",
+    street: "Көше",
+    streetPlaceholder: "Көшені енгізіңіз",
+
     payment: "Төлем тәсілі",
+
+    promo: "Промокод",
+    promoPlaceholder: "Промокодты енгізіңіз",
+    apply: "Қолдану",
+    promoApplied: "Промокод сәтті қолданылды",
+
+    summary: "Сіздің тапсырысыңыз",
     yourOrder: "Сіздің тапсырысыңыз",
     total: "Жалпы",
-    submit: "Рәсімдеу"
+
+    submit: "Тапсырысты рәсімдеу"
   },
   catalog: {
   title: 'Тауарлар каталогы',
