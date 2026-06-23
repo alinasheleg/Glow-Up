@@ -225,45 +225,25 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const partnerAuth = localStorage.getItem('partnerAuth')
 
-  if (to.meta.requiresAuth && !token && !partnerAuth) {
-    next('/login')
-    return
-  }
-
-  // редирект только для обычных юзеров
-  if (token && !partnerAuth && (to.path === '/login' || to.path === '/register')) {
-    next('/profile')
-    return
-  }
-
-  // редирект для партнёров
-  if (partnerAuth && to.path === '/partner-login') {
-    next('/profile')
-    return
-  }
-
-  next()
-
-  router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
-  const partnerAuth = localStorage.getItem('partnerAuth')
-
-  // 🔥 синхронизация языка
+  // 🌐 язык (оставляем тут)
   const savedLang = localStorage.getItem('lang')
   if (savedLang) {
     i18n.global.locale = savedLang
   }
 
+  // ❌ доступ только авторизованным (user или partner)
   if (to.meta.requiresAuth && !token && !partnerAuth) {
     next('/login')
     return
   }
 
+  // 🔁 редирект обычного юзера с login/register
   if (token && !partnerAuth && (to.path === '/login' || to.path === '/register')) {
     next('/profile')
     return
   }
 
+  // 🔁 редирект партнёра с partner-login
   if (partnerAuth && to.path === '/partner-login') {
     next('/profile')
     return
@@ -271,6 +251,6 @@ router.beforeEach((to, from, next) => {
 
   next()
 })
-})
+
 
 export default router 

@@ -285,14 +285,32 @@ export default {
     }
   },
 
-  mounted() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || []
+async mounted() {
+  const token = localStorage.getItem('token')
 
-    this.cartItems = cart.map(item => ({
+  if (!token) {
+    this.$router.push('/login')
+    return
+  }
+
+  try {
+    const res = await fetch('http://127.0.0.1:8001/api/cart', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+
+    const data = await res.json()
+
+    this.cartItems = data.map(item => ({
       ...item,
       quantity: item.quantity || 1
     }))
-  },
+
+  } catch (e) {
+    console.log('Cart load error:', e)
+  }
+},
 
   computed: {
     subtotal() {
@@ -334,25 +352,44 @@ export default {
         alert('Неверный промокод')
       }
     },
-async submitOrder() {
-  const token = localStorage.getItem('token')
+    async submitOrder() {
+      const token = localStorage.getItem('token')
 
-  const res = await fetch('http://127.0.0.1:8001/api/orders', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({
-      items: this.cartItems,
-      total: this.total
-    })
-  })
+      // ❗ защита перед запросом
+      if (!token) {
+        this.$router.push('/login')
+        return
+      }
 
-  const text = await res.text()
-  console.log('RAW RESPONSE:', text)
-}
-}
-}
+      const res = await fetch('http://127.0.0.1:8001/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          items: this.cartItems.map(i => ({
+          product_id: i.product_id,
+          quantity: i.quantity
+        })),
+          total: this.total
+        })
+      })
 
+      if (res.ok) {
+        await fetch('http://127.0.0.1:8001/api/cart/clear', {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+
+        this.$router.push('/profile')
+      }else {
+        const text = await res.text()
+        console.log('RAW RESPONSE:', text)
+      }
+    }
+  }
+}
 </script>

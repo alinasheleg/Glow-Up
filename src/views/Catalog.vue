@@ -44,9 +44,12 @@
         <div
           v-for="product in filteredProducts"
           :key="product.id"
-          class="bg-white rounded-2xl shadow p-4 hover:shadow-lg cursor-pointer"
-        >
+          class="relative bg-white rounded-2xl shadow p-4 hover:shadow-lg cursor-pointer"
+        > 
           <router-link :to="`/product/${product.id}`">
+            <div v-if="product.discount > 0" class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+              SALE
+            </div>
             <!-- Картинка -->
             <div class="h-56 bg-gray-100 rounded-xl overflow-hidden flex items-center justify-center">
               <img
@@ -64,9 +67,24 @@
           </router-link>
 
           <div class="flex justify-between items-center mt-4">
-            <span class="text-pink-600 font-bold text-xl">
-              {{ product.price }} ₸
-            </span>
+            <div class="flex flex-col">
+
+              <!-- старая цена -->
+              <span v-if="product.discount > 0" class="text-gray-400 line-through text-sm">
+                {{ product.price }} ₸
+              </span>
+
+              <!-- новая цена -->
+              <span class="text-pink-600 font-bold text-xl">
+                {{ product.final_price }} ₸
+              </span>
+
+              <!-- скидка -->
+              <span v-if="product.discount > 0" class="text-green-500 text-xs font-bold">
+                -{{ product.discount }}%
+              </span>
+
+            </div>
 
             <div class="flex gap-2">
 
@@ -119,7 +137,9 @@ export default {
       let items = this.products
 
       if (this.selectedCategory !== 'Все') {
-        items = items.filter(p => p.category === this.selectedCategory)
+        items = items.filter(p =>
+          (p.category || '').toLowerCase() === this.selectedCategory.toLowerCase()
+        )
       }
 
       if (this.search) {
@@ -177,23 +197,29 @@ export default {
 
   async mounted() {
     try {
-      const [productsRes, categoriesRes] = await Promise.all([
-        axios.get('http://127.0.0.1:8001/api/products'),
-        axios.get('http://127.0.0.1:8001/api/categories')
-      ])
+
+      const productsRes = await axios.get('http://127.0.0.1:8001/api/products')
 
       this.products = productsRes.data.map(p => ({
         id: p.id,
         name: p.title,
         brand: p.brand,
-        category: p.category,
+        category: p.category ?? 'Без категории',
         price: p.price,
+        final_price: p.final_price,
+        discount: p.discount,
         image: p.image,
-        description: p.description,
         is_favorite: p.is_favorite ?? false
       }))
 
-      this.categories = ['Все', ...categoriesRes.data.map(c => c.name)]
+      const uniqueCategories = [
+        ...new Set(
+          this.products
+            .map(p => p.category)
+            .filter(Boolean)
+        )
+      ]
+      this.categories = ['Все', ...uniqueCategories]
 
     } catch (error) {
       console.error('Ошибка загрузки:', error)
